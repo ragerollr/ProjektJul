@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using ProjektJul.Models;
+using Projekt.Web.ViewModels;
 
 namespace Projekt.Web.Controllers
 {
@@ -18,7 +18,12 @@ namespace Projekt.Web.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult MyProfile()
+        {
+            return View();
+        }
+
+        public IActionResult Inbox()
         {
             return View();
         }
