@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CVSite.Data.Models
 {
-    public class Projekt
+    public class Projects
     {
         [Key]
         public int Id { get; set; }
