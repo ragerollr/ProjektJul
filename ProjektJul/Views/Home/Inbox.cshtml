@@ -1,6 +1,31 @@
-﻿@{
-    ViewData["Title"] = "My Messages";
-}
-<h1>@ViewData["Title"]</h1>
+﻿@model IEnumerable<Projekt.Data.Models.Message>
 
-<p>This page provides detailed information about the messages in your inbox.</p>
+@{
+    ViewData["Title"] = "Inbox";
+}
+
+<h2>Inbox</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>From</th>
+            <th>To</th>
+            <th>Message</th>
+            <th>Sent At</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var msg in Model)
+        {
+            <tr>
+                <td>@msg.SenderId</td>
+                <td>@msg.ReceiverId</td>
+                <td>@msg.Content</td>
+                <td>@msg.SentAt.ToString("g")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a class="btn btn-primary" asp-action="Create">Send New Message</a>

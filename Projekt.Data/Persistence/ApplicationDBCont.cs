@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Projekt.Data.Identity;
+using Projekt.Data.Models;
 
 namespace Projekt.Data.Persistence
 {
@@ -16,5 +17,7 @@ namespace Projekt.Data.Persistence
         public DbSet<Skill> Skills { get; set; }
         public DbSet<Projects> Projekts { get; set; }
         public DbSet<Utbildning> Utildningar { get; set; }
+        public DbSet<Message> Messages { get; set; } // Lägg till DbSet för Message
+
     }
 }
