@@ -6,21 +6,19 @@
 
 <h2>Inbox</h2>
 
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
-            <th>From</th>
-            <th>To</th>
-            <th>Message</th>
-            <th>Sent At</th>
+            <th>Från</th>
+            <th>Meddelande</th>
+            <th>Skickat</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var msg in Model)
         {
             <tr>
-                <td>@msg.SenderId</td>
-                <td>@msg.ReceiverId</td>
+                <td>@(msg.Sender != null ? msg.Sender.UserName : msg.SenderId)</td>
                 <td>@msg.Content</td>
                 <td>@msg.SentAt.ToString("g")</td>
             </tr>
@@ -28,4 +26,4 @@
     </tbody>
 </table>
 
-<a class="btn btn-primary" asp-action="Create">Send New Message</a>
+<a class="btn btn-primary" asp-action="SendMessage">Skicka nytt meddelande</a>

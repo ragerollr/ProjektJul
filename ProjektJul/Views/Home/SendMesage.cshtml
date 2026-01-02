@@ -1,0 +1,42 @@
+﻿@model Projekt.Data.Models.Message
+
+@{
+    ViewData["Title"] = "Skicka meddelande";
+}
+
+<h2>Skicka meddelande</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+<form asp-action="SendMessage" method="post">
+    <div class="form-group">
+        @* Om användaren inte är inloggad visas fält för namn *@
+        @if (!User.Identity.IsAuthenticated)
+        {
+            <label for="SenderId">Ditt namn</label>
+            <input asp-for="SenderId" class="form-control" placeholder="Skriv ditt namn" />
+            <span asp-validation-for="SenderId" class="text-danger"></span>
+        }
+
+        <label for="ReceiverId">Mottagare (användar-ID)</label>
+        <input asp-for="ReceiverId" class="form-control" placeholder="Mottagarens ID" />
+        <span asp-validation-for="ReceiverId" class="text-danger"></span>
+
+        <label for="Content">Meddelande</label>
+        <textarea asp-for="Content" class="form-control" rows="5"></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">Skicka</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
