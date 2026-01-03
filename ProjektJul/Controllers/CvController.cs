@@ -7,7 +7,7 @@ namespace Projekt.Web.Controllers
 {
     public class CvController : Controller
     {
-        public IActionResult Index()
+        public IActionResult MyProfile()
         {
 
             var vm = new CvViewModel
