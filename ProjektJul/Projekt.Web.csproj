@@ -19,4 +19,8 @@
     <ProjectReference Include="..\Projekt.Data\Projekt.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\NewFolder\" />
+  </ItemGroup>
+
 </Project>

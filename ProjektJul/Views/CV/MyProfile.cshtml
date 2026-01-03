@@ -1,0 +1,33 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model Projekt.Web.ViewModels.CvViewModel
+
+
+<div class="mb-3">
+    <a asp-action="Edit" class="btn btn-primary">
+        Edit profile
+    </a>
+</div>
+
+
+<h1>@Model.FullName</h1>
+
+<img src="@Model.ProfileImageUrl" width="150" />
+
+<p><strong>Email:</strong> @Model.Email</p>
+<p><strong>Address:</strong> @Model.Address</p>
+<p><strong>Status:</strong> @(Model.IsPublic ? "Public" : "Private")</p>
+
+<h3>Projekt</h3>
+<ul>
+    @foreach (var project in Model.Projects)
+    {
+        <li>@project</li>
+    }
+</ul>
+
+<a asp-action="Edit">Edit profile</a>

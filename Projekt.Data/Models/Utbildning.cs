@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+using Projekt.Data.Identity;
 namespace CVSite.Data.Models
 {
     public class Utbildning
@@ -20,6 +20,6 @@ namespace CVSite.Data.Models
         public DateTime? EndDate { get; set; } //Kan vara null ifall man har en pågående utbildning.
         [ForeignKey(nameof(User))]
         public string UserId { get; set; }
-        public virtual IdentityUser User { get; set; }
+        public virtual ApplicationUser User { get; set; }
     }
 }

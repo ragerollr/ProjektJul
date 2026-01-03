@@ -1,8 +1,74 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model Projekt.Web.ViewModels.IndexVm
+@{
+    ViewData["Title"] = "Startsida";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="py-5 text-center bg-light rounded-3 mb-5">
+    <div class="container">
+        <h1 class="display-5 fw-bold mb-3">Utforska CV:n och senaste projektet</h1>
+        <p class="lead text-muted">Hitta rätt person för nästa uppdrag och se vad vi byggt nyligen.</p>
+    </div>
+</section>
+
+<section class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 mb-0">Urval av CV:n</h2>
+        <a class="btn btn-outline-secondary btn-sm" href="/Home/MyProfile">Visa alla profiler</a>
+    </div>
+
+    @if (Model?.FeaturedCvs?.Any() == true)
+    {
+        <div class="row g-4">
+            @foreach (var cv in Model.FeaturedCvs)
+            {
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="@(string.IsNullOrWhiteSpace(cv.AvatarUrl) ? "https://via.placeholder.com/80" : cv.AvatarUrl)"
+                                     class="rounded-circle me-3" alt="Profilbild" width="64" height="64">
+                                <div>
+                                    <div class="fw-bold">@cv.FullName</div>
+                                    <small class="text-muted">@cv.Title</small>
+                                </div>
+                            </div>
+                            <p class="text-muted flex-grow-1">@cv.Summary</p>
+                            <a class="btn btn-primary mt-2" href="@cv.ProfileUrl">Öppna profil</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-secondary">Inga profiler att visa just nu.</div>
+    }
+</section>
+
+<section class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 mb-0">Senaste projekt</h2>
+        <a class="btn btn-outline-secondary btn-sm" href="/project">Visa fler projekt</a>
+    </div>
+
+    @if (Model?.LatestProject is { } project)
+    {
+        <div class="card border-0 shadow-sm">
+            @if (!string.IsNullOrWhiteSpace(project.ImageUrl))
+@*           {
+                <img src="@project.ImageUrl" class="card-img-top" alt="Projektbild">
+            } *@
+            <div class="card-body">
+                <div class="text-muted mb-2">Publicerat @project.PublishedAt.ToString("d MMM yyyy")</div>
+                <h3 class="card-title">@project.Title</h3>
+                <p class="card-text text-muted">@project.Summary</p>
+                <a class="btn btn-dark" href="@project.DetailUrl">Till projektet</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-secondary">Inget projekt upplagt ännu.</div>
+    }
+</section>
