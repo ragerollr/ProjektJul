@@ -3,3 +3,69 @@
 *@
 @{
 }
+@model Projekt.Web.ViewModels.EditCvViewModel
+
+<hi>Edit CV</hi>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+
+    <div>
+        <label>First name</label>
+        <input asp-for="FirstName" />
+    </div>
+
+    <div>
+        <label>Last name</label>
+        <input asp-for="LastName" />
+    </div>
+
+    <div>
+        <label>Address</label>
+        <input asp-for="Address" />
+    </div>
+
+    <div>
+        <label>
+            <input asp-for="IsPublic" />
+            Public profile
+        </label>
+    </div>
+
+    <div>
+        <label>Skills</label>
+        <textarea asp-for="Skills"></textarea>
+    </div>
+
+
+    <div>
+        <label>Education</label>
+        <textarea asp-for="Education"></textarea>
+    </div>
+
+    <div>
+        <label>Experience</label>
+        <textarea asp-for="Experience"></textarea>
+    </div>
+
+    <div>
+        <label>Profile image</label>
+        <input asp-for="ProfileImage" type="file" />
+    </div>
+
+    <h3>Projects</h3>
+
+    @for (int i = 0; i < Model.Projects.Count; i++)
+    {
+        <div>
+            <input asp-for="Projects[i].IsSelected" />
+            <label>@Model.Projects[i].Title</label>
+
+            <input type="hidden" asp-for="Projects[i].ProjectId" />
+            <input type="hidden" asp-for="Projects[i].Title" />
+        </div>
+    }
+
+
+    <button type="submit">Save</button>
+
+</form>
