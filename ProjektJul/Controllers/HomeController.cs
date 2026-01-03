@@ -60,16 +60,16 @@ namespace Projekt.Web.Controllers
                         ProfileUrl = "/Home/MyProfile/dennis",
                         AvatarUrl = "https://via.placeholder.com/120"
                     }
-                ],
-                LatestProject = new ProjektModel
-                {
-                    Id = 1,
-                    Title = "Kundportal för logistik",
-                    Summary = "Ett program för att hantera transporter och spåra leveranser i realtid. av Johan Erlandsson och Elin Sundell.",
-                    PublishedAt = DateTime.UtcNow.AddDays(-3),
-                    DetailUrl = "/project/details/1",
-                    ImageUrl = "https://via.placeholder.com/800x400"
-                }
+                ]
+                //LatestProject = new Projects
+                //{
+                //    Id = 1,
+                //    Title = "Kundportal för logistik",
+                //    Summary = "Ett program för att hantera transporter och spåra leveranser i realtid. av Johan Erlandsson och Elin Sundell.",
+                //    PublishedAt = DateTime.UtcNow.AddDays(-3),
+                //    DetailUrl = "/project/details/1",
+                //    ImageUrl = "https://via.placeholder.com/800x400"
+                //}
             };
 
             return View(vm);

@@ -23,6 +23,9 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="Index">Projects</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="CV" asp-action="MyProfile">Profile</a>
                         </li>
                         <li class="nav-item">
@@ -56,3 +59,10 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+@if (TempData["Alert"] is string msg)
+{
+    <div class="alert alert-info alert-dismissible fade show position-fixed bottom-0 end-0 m-3" role="alert" style="z-index: 1050;">
+        @msg
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}

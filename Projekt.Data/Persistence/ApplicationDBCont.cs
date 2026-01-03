@@ -16,5 +16,27 @@ namespace Projekt.Data.Persistence
         public DbSet<Skill> Skills { get; set; }
         public DbSet<Projects> Projekts { get; set; }
         public DbSet<Utbildning> Utildningar { get; set; }
-    }
+    
+
+    protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.Entity<Projects>().HasData(
+                new Projects
+                {
+                    Id = 1,
+                    Title = "Projekt 1",
+                    Description = "Beskrivning av projekt 1",
+                    UserId = "user1"
+                },
+                new Projects
+                {
+                    Id = 2,
+                    Title = "Projekt 2",
+                    Description = "Beskrivning av projekt 2",
+                    UserId = "user2"
+                }
+            );
+        }
+}
 }
