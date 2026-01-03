@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Projekt.Data.Identity;
 
 namespace Projekt.Data.Models
 {
@@ -9,26 +10,27 @@ namespace Projekt.Data.Models
         [Key]
         public int Id { get; set; }
 
-        // Inloggad användare (kan vara null om anonym)
+        // Inloggad användare
         public string? SenderId { get; set; }
 
         [ForeignKey(nameof(SenderId))]
-        public IdentityUser? Sender { get; set; }
+        public ApplicationUser? Sender { get; set; }
 
-        // För anonym användare
+        // Används av anonym användare
         [StringLength(100)]
         public string? SenderName { get; set; }
 
         [Required]
-        public string ReceiverId { get; set; } = "";
+        public string ReceiverId { get; set; }
 
         [ForeignKey(nameof(ReceiverId))]
-        public IdentityUser Receiver { get; set; }
+        public ApplicationUser Receiver { get; set; } = null!;
 
-        [Required]
-        [StringLength(1000)]
+        [Required, StringLength(1000)]
         public string Content { get; set; } = "";
 
         public DateTime SentAt { get; set; } = DateTime.Now;
+
+        public bool IsRead { get; set; } = false;
     }
 }

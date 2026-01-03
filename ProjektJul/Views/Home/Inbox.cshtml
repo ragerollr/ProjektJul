@@ -1,12 +1,8 @@
 ﻿@model IEnumerable<Projekt.Data.Models.Message>
 
-@{
-    ViewData["Title"] = "Inbox";
-}
-
 <h2>Inbox</h2>
 
-<table class="table table-striped">
+<table class="table">
     <thead>
         <tr>
             <th>Från</th>
@@ -14,16 +10,3 @@
             <th>Skickat</th>
         </tr>
     </thead>
-    <tbody>
-        @foreach (var msg in Model)
-        {
-            <tr>
-                <td>@(msg.Sender != null ? msg.Sender.UserName : msg.SenderId)</td>
-                <td>@msg.Content</td>
-                <td>@msg.SentAt.ToString("g")</td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<a class="btn btn-primary" asp-action="SendMessage">Skicka nytt meddelande</a>

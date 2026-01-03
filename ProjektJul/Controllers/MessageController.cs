@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Projekt.Data.Identity;
 using Projekt.Data.Models;
 using Projekt.Data.Persistence;
 
@@ -9,67 +10,55 @@ namespace Projekt.Web.Controllers
     public class MessageController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public MessageController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public MessageController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
-        }
-
-        // Visa inbox
-        public IActionResult Inbox()
-        {
-            var messages = _context.Messages
-                .Include(m => m.Sender) // Ladda med avsändarens namn
-                .OrderByDescending(m => m.SentAt)
-                .ToList();
-
-            return View(messages);
         }
 
         // Visa formulär för att skicka meddelande
         [HttpGet]
         public IActionResult SendMessage(string receiverId)
         {
-            var message = new Message
+            var vm = new Message
             {
                 ReceiverId = receiverId
             };
-            return View(message);
+            return View(vm);
         }
 
         // Skicka meddelande
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendMessage(Message message)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(message);
+
+            // Om användaren är inloggad, fyll i deras ID automatiskt
+            if (User.Identity.IsAuthenticated)
             {
-                // Om användaren är inloggad, fyll i deras ID automatiskt
-                if (User.Identity.IsAuthenticated)
+                var user = await _userManager.GetUserAsync(User);
+                message.SenderId = user.Id;
+            }
+            else
+            {
+                // Om anonym, måste skriva namn
+                if (string.IsNullOrWhiteSpace(message.SenderName))
                 {
-                    var user = await _userManager.GetUserAsync(User);
-                    message.SenderId = user.Id;
+                    ModelState.AddModelError("SenderName", "Du måste ange ditt namn.");
+                    return View(message);
                 }
-                else
-                {
-                    // Om anonym, kontrollera att avsändarnamn finns (SenderId används för namn här)
-                    if (string.IsNullOrWhiteSpace(message.SenderId))
-                    {
-                        ModelState.AddModelError("SenderId", "Du måste skriva ditt namn som avsändare.");
-                        return View(message);
-                    }
-                }
-
-                message.SentAt = DateTime.Now;
-
-                _context.Messages.Add(message);
-                _context.SaveChanges();
-
-                return RedirectToAction("Inbox");
             }
 
-            return View(message);
+            message.SentAt = DateTime.Now;
+            _context.Messages.Add(message);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Meddelandet skickades!";
+            return RedirectToAction("SendMessage", new { receiverId = message.ReceiverId }); //test
         }
     }
 }

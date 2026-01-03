@@ -8,31 +8,28 @@
 
 @if (TempData["Success"] != null)
 {
-    <div class="alert alert-success">
-        @TempData["Success"]
-    </div>
+    <div class="alert alert-success">@TempData["Success"]</div>
 }
 
 <form asp-action="SendMessage" method="post">
-    <div class="form-group">
-        @* Om användaren inte är inloggad visas fält för namn *@
-        @if (!User.Identity.IsAuthenticated)
-        {
-            <label for="SenderId">Ditt namn</label>
-            <input asp-for="SenderId" class="form-control" placeholder="Skriv ditt namn" />
-            <span asp-validation-for="SenderId" class="text-danger"></span>
-        }
+    <input type="hidden" asp-for="ReceiverId" />
 
-        <label for="ReceiverId">Mottagare (användar-ID)</label>
-        <input asp-for="ReceiverId" class="form-control" placeholder="Mottagarens ID" />
-        <span asp-validation-for="ReceiverId" class="text-danger"></span>
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <div class="form-group mb-2">
+            <label>Ditt namn</label>
+            <input asp-for="SenderName" class="form-control" />
+            <span asp-validation-for="SenderName" class="text-danger"></span>
+        </div>
+    }
 
-        <label for="Content">Meddelande</label>
-        <textarea asp-for="Content" class="form-control" rows="5"></textarea>
+    <div class="form-group mb-2">
+        <label>Meddelande</label>
+        <textarea asp-for="Content" class="form-control" rows="4"></textarea>
         <span asp-validation-for="Content" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-primary mt-2">Skicka</button>
+    <button type="submit" class="btn btn-primary">Skicka</button>
 </form>
 
 @section Scripts {
