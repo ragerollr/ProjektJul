@@ -6,13 +6,11 @@
 
 @model Projekt.Web.ViewModels.CvViewModel
 
-
 <div class="mb-3">
     <a asp-action="Edit" class="btn btn-primary">
         Edit profile
     </a>
 </div>
-
 
 <h1>@Model.FullName</h1>
 
@@ -31,3 +29,38 @@
 </ul>
 
 <a asp-action="Edit">Edit profile</a>
+
+<hr />
+
+@if (TempData["MessageError"] != null)
+{
+    <div class="alert alert-danger">@TempData["MessageError"]</div>
+}
+@if (TempData["MessageSuccess"] != null)
+{
+    <div class="alert alert-success">@TempData["MessageSuccess"]</div>
+}
+
+<h3>Skicka meddelande</h3>
+
+<form asp-controller="Messages" asp-action="Send" method="post">
+    @Html.AntiForgeryToken()
+
+    <!-- Mottagarens UserId (måste finnas i CvViewModel) -->
+    <input type="hidden" name="ToUserId" value="@Model.UserId" />
+
+    @if (!(User.Identity?.IsAuthenticated ?? false))
+    {
+        <div class="mb-3">
+            <label class="form-label">Ditt namn</label>
+            <input class="form-control" name="FromName" />
+        </div>
+    }
+
+    <div class="mb-3">
+        <label class="form-label">Meddelande</label>
+        <textarea class="form-control" name="Body" rows="4"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Skicka</button>
+</form>
