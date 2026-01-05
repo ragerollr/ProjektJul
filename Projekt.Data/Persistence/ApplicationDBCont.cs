@@ -21,26 +21,26 @@ namespace Projekt.Data.Persistence
 
     
 
-    protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
-            builder.Entity<Projects>().HasData(
-                new Projects
-                {
-                    Id = 1,
-                    Title = "Projekt 1",
-                    Description = "Beskrivning av projekt 1",
-                    UserId = "user1"
-                },
-                new Projects
-                {
-                    Id = 2,
-                    Title = "Projekt 2",
-                    Description = "Beskrivning av projekt 2",
-                    UserId = "user2"
-                }
-            );
-        }
+    //protected override void OnModelCreating(ModelBuilder builder)
+    //    {
+    //        //base.OnModelCreating(builder);
+    //        //builder.Entity<Projects>().HasData(
+    //        //    new Projects
+    //        //    {
+    //        //        Id = 1,
+    //        //        Title = "Projekt 1",
+    //        //        Description = "Beskrivning av projekt 1",
+    //        //        UserId = "user1"
+    //        //    },
+    //        //    new Projects
+    //        //    {
+    //        //        Id = 2,
+    //        //        Title = "Projekt 2",
+    //        //        Description = "Beskrivning av projekt 2",
+    //        //        UserId = "user2"
+    //        //    }
+    //        );
+    //    }
 
 
         public DbSet<Message> Messages => Set<Message>();
