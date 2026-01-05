@@ -14,5 +14,6 @@
         public List<string> Experiences { get; set; }
 
         public List<string> Projects { get; set; }
+        public string UserId { get; internal set; }
     }
 }

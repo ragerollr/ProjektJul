@@ -58,8 +58,15 @@ namespace Projekt.Web.Controllers
         {
             if (!ModelState.IsValid) return View(vm);
 
+            var user = await _userManager.FindByEmailAsync(vm.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "Fel e-post eller lösenord.");
+                return View(vm);
+            }
+
             var result = await _signInManager.PasswordSignInAsync(
-                vm.Email, vm.Password, vm.RememberMe, lockoutOnFailure: false);
+                user.UserName!, vm.Password, vm.RememberMe, lockoutOnFailure: false);
 
             if (!result.Succeeded)
             {
@@ -69,6 +76,7 @@ namespace Projekt.Web.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

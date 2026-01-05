@@ -1,69 +1,61 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Projekt.Data.Persistence;
 using Projekt.Web.ViewModels;
-using System.Linq;
-using static Projekt.Web.ViewModels.ProjectCheckBoxViewModel;
 
 namespace Projekt.Web.Controllers
 {
     public class CvController : Controller
     {
-        public IActionResult MyProfile()
+        private readonly ApplicationDbContext _db;
+
+        public CvController(ApplicationDbContext db)
         {
+            _db = db;
+        }
+
+        // Visar CV för en specifik användare (krav #5/#7 och behövs för #11)
+        [HttpGet]
+        public async Task<IActionResult> Details(string id)
+        {
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (user == null) return NotFound();
 
             var vm = new CvViewModel
             {
-                FullName = "Elin Sundell",
-                Email = "elin@test.se",
-                Address = "Östersund",
-                IsPublic = true,
-
+                UserId = user.Id,
+                FullName = user.FullName ?? user.Email ?? "Okänd",
+                Email = user.Email ?? "",
+                Address = "", // ni kan koppla senare
+                IsPublic = !user.IsPrivate,
                 ProfileImageUrl = "/images/default-profile.png",
-
-                Skills = new() { "C#", "ASP.NET", "SQL" },
-                Educations = new() { "Uppsala universitet" },
-                Experiences = new() { "Praktik – Backend" },
-                Projects = new() { "CV-portal", "API-projekt" }
+                Skills = new(),
+                Educations = new(),
+                Experiences = new(),
+                Projects = new()
             };
 
-                return View(vm);
-
-
+            return View("MyProfile", vm); // återanvänd din view
         }
 
-        [HttpGet]
-        public IActionResult Edit()
-        {
-            var vm = new EditCvViewModel
-            {
-                FirstName = "Elin",
-                LastName = "Sundell",
-                Address = "Östersund",
-                IsPublic = true,
-                Skills = "C#, ASP.NET",
-                Education = "Uppsala universitet",
-                Experience = "Praktik inom backend",
+        //public IActionResult MyProfile()
+        //{
+        //    // Din hårdkodade variant kan vara kvar tills ni kopplar riktig profil.
+        //    var vm = new CvViewModel
+        //    {
+        //        UserId = "", // tom nu
+        //        FullName = "Elin Sundell",
+        //        Email = "elin@test.se",
+        //        Address = "Östersund",
+        //        IsPublic = true,
+        //        ProfileImageUrl = "/images/default-profile.png",
+        //        Skills = new() { "C#", "ASP.NET", "SQL" },
+        //        Educations = new() { "Uppsala universitet" },
+        //        Experiences = new() { "Praktik – Backend" },
+        //        Projects = new() { "CV-portal", "API-projekt" }
+        //    };
 
-
-                 Projects = new List<ProjectCheckboxViewModel>
-        {
-            new() { ProjectId = 1, Title = "CV-portal", IsSelected = true },
-            new() { ProjectId = 2, Title = "API-projekt", IsSelected = false },
-            new() { ProjectId = 3, Title = "Webbshop", IsSelected = true }
-        }
-
-            };
-            return View(vm);
-        }
-
-       [HttpPost]
-       public IActionResult Edit(EditCvViewModel model)
-        {
-            var selectedProjects = model.Projects
-            .Where(p => p.IsSelected)
-            .ToList();
-
-
-            return RedirectToAction("Index");
-        }
+        //    return View(vm);
+        //}
     }
 }

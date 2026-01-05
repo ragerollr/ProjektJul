@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Projekt.Data.Persistence;
 
@@ -11,9 +12,11 @@ using Projekt.Data.Persistence;
 namespace Projekt.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260104103836_AddMessages")]
+    partial class AddMessages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,22 +90,6 @@ namespace Projekt.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Projekts");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Beskrivning av projekt 1",
-                            Title = "Projekt 1",
-                            UserId = "user1"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Beskrivning av projekt 2",
-                            Title = "Projekt 2",
-                            UserId = "user2"
-                        });
                 });
 
             modelBuilder.Entity("CVSite.Data.Models.Skill", b =>
