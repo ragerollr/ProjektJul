@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Views\Messages\" />
     <Folder Include="Views\Search\" />
     <Folder Include="Views\NewFolder\" />
   </ItemGroup>

@@ -1,0 +1,58 @@
+@model List<Projekt.Web.ViewModels.InboxMessageVm>
+
+@{
+    ViewData["Title"] = "Inbox";
+}
+
+<h1>Inbox</h1>
+
+@if (!Model.Any())
+{
+    <p>Du har inga meddelanden.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Från</th>
+                <th>Meddelande</th>
+                <th>Datum</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var msg in Model)
+        {
+            <tr>
+                <td>@msg.FromDisplayName</td>
+                <td>@msg.Body</td>
+                <td>@msg.SentAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                <td>
+                    @if (msg.IsRead)
+                    {
+                        <span class="badge bg-success">Läst</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">Oläst</span>
+                    }
+                </td>
+                <td>
+                    @if (!msg.IsRead)
+                    {
+                        <form asp-controller="Messages" asp-action="MarkRead" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@msg.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                Markera som läst
+                            </button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

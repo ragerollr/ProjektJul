@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Projekt.Data.Identity;
@@ -20,6 +21,7 @@ namespace Projekt.Web.Controllers
             _userManager = userManager;
         }
 
+        // ===== KRAV: Skicka meddelande (från CV-sida) =====
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Send(MessageCreateVm vm)
@@ -30,7 +32,6 @@ namespace Projekt.Web.Controllers
                 return RedirectToAction("Details", "Cv", new { id = vm.ToUserId });
             }
 
-            // recipient exists?
             var recipientExists = await _db.Users.AnyAsync(u => u.Id == vm.ToUserId);
             if (!recipientExists) return NotFound();
 
@@ -74,6 +75,54 @@ namespace Projekt.Web.Controllers
 
             TempData["MessageSuccess"] = "Meddelandet skickades!";
             return RedirectToAction("Details", "Cv", new { id = vm.ToUserId });
+        }
+
+        // ===== KRAV: Inkorg =====
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Inbox()
+        {
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (myId == null) return RedirectToAction("Login", "Account");
+
+            var messages = await _db.Messages
+                .Where(m => m.ToUserId == myId)
+                .OrderByDescending(m => m.SentAt)
+                .Select(m => new InboxMessageVm
+                {
+                    Id = m.Id,
+                    FromDisplayName = m.FromName ?? "Okänd",
+                    Body = m.Body,
+                    SentAt = m.SentAt,
+                    IsRead = m.IsRead
+                })
+                .ToListAsync();
+
+            return View(messages);
+        }
+
+        // ===== KRAV: Markera som läst =====
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkRead(int id)
+        {
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (myId == null) return RedirectToAction("Login", "Account");
+
+            var msg = await _db.Messages.FirstOrDefaultAsync(m => m.Id == id);
+            if (msg == null) return NotFound();
+
+            // Uni-nivå: säkerställ att användaren bara kan markera sina egna meddelanden
+            if (msg.ToUserId != myId) return Forbid();
+
+            if (!msg.IsRead)
+            {
+                msg.IsRead = true;
+                await _db.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Inbox));
         }
     }
 }
