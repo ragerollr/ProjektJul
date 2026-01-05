@@ -15,6 +15,6 @@ namespace Projekt.Data.Persistence
         public DbSet<Erfarenhet> Erfarenhets { get; set; }
         public DbSet<Skill> Skills { get; set; }
         public DbSet<Projects> Projekts { get; set; }
-        public DbSet<Utbildning> Utildningar { get; set; }
+        public DbSet<Utbildning> Utbildningar { get; set; }
     }
 }

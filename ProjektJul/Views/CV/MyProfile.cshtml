@@ -22,6 +22,14 @@
 <p><strong>Address:</strong> @Model.Address</p>
 <p><strong>Status:</strong> @(Model.IsPublic ? "Public" : "Private")</p>
 
+<h3>Kompetenser</h3>
+<ul>
+    @foreach (var skill in Model.Skills)
+    {
+        <li>@skill</li>
+    }
+</ul>
+
 <h3>Projekt</h3>
 <ul>
     @foreach (var project in Model.Projects)
