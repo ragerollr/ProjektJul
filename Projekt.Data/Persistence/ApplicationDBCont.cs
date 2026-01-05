@@ -41,7 +41,7 @@ namespace Projekt.Data.Persistence
                 }
             );
         }
-}
+
 
         public DbSet<Message> Messages => Set<Message>();
 
