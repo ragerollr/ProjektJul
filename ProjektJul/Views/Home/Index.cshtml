@@ -13,7 +13,7 @@
 <section class="container mb-5">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="h4 mb-0">Urval av CV:n</h2>
-        <a class="btn btn-outline-secondary btn-sm" href="/Home/MyProfile">Visa alla profiler</a>
+        <a class="btn btn-outline-secondary btn-sm" asp-controller="Search" asp-action="Index">Visa alla profiler</a>
     </div>
 
     @if (Model?.FeaturedCvs?.Any() == true)
@@ -55,10 +55,6 @@
     @if (Model?.LatestProject is { } project)
     {
         <div class="card border-0 shadow-sm">
-            @if (!string.IsNullOrWhiteSpace(project.ImageUrl))
-@*           {
-                <img src="@project.ImageUrl" class="card-img-top" alt="Projektbild">
-            } *@
             <div class="card-body">
                 <div class="text-muted mb-2">Publicerat @project.PublishedAt.ToString("d MMM yyyy")</div>
                 <h3 class="card-title">@project.Title</h3>

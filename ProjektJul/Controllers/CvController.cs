@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Projekt.Data.Persistence;
 using Projekt.Web.ViewModels;
+using System.Security.Claims;
 
 namespace Projekt.Web.Controllers
 {
@@ -14,19 +16,23 @@ namespace Projekt.Web.Controllers
             _db = db;
         }
 
-        // Visar CV för en specifik användare (krav #5/#7 och behövs för #11)
+        // Min egen profil (krav 4/6)
+        [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> MyProfile()
         {
-            var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == id);
-            if (user == null) return NotFound();
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (myId == null) return RedirectToAction("Login", "Account");
+
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == myId);
+            if (user == null) return RedirectToAction("Login", "Account");
 
             var vm = new CvViewModel
             {
                 UserId = user.Id,
                 FullName = user.FullName ?? user.Email ?? "Okänd",
                 Email = user.Email ?? "",
-                Address = "", // ni kan koppla senare
+                Address = "",
                 IsPublic = !user.IsPrivate,
                 ProfileImageUrl = "/images/default-profile.png",
                 Skills = new(),
@@ -35,27 +41,39 @@ namespace Projekt.Web.Controllers
                 Projects = new()
             };
 
-            return View("MyProfile", vm); // återanvänd din view
+            return View(vm); // Views/Cv/MyProfile.cshtml
         }
 
-        //public IActionResult MyProfile()
-        //{
-        //    // Din hårdkodade variant kan vara kvar tills ni kopplar riktig profil.
-        //    var vm = new CvViewModel
-        //    {
-        //        UserId = "", // tom nu
-        //        FullName = "Elin Sundell",
-        //        Email = "elin@test.se",
-        //        Address = "Östersund",
-        //        IsPublic = true,
-        //        ProfileImageUrl = "/images/default-profile.png",
-        //        Skills = new() { "C#", "ASP.NET", "SQL" },
-        //        Educations = new() { "Uppsala universitet" },
-        //        Experiences = new() { "Praktik – Backend" },
-        //        Projects = new() { "CV-portal", "API-projekt" }
-        //    };
+        // Visar CV för en specifik användare (krav 5/6/7/11)
+        [HttpGet]
+        public async Task<IActionResult> Details(string id)
+        {
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (user == null) return NotFound();
 
-        //    return View(vm);
-        //}
+            // Krav 6: privat profil syns bara för inloggade
+            var isLoggedIn = User.Identity?.IsAuthenticated ?? false;
+            if (user.IsPrivate && !isLoggedIn)
+            {
+                var returnUrl = Url.Action("Details", "Cv", new { id });
+                return RedirectToAction("Login", "Account", new { returnUrl });
+            }
+
+            var vm = new CvViewModel
+            {
+                UserId = user.Id,
+                FullName = user.FullName ?? user.Email ?? "Okänd",
+                Email = user.Email ?? "",
+                Address = "",
+                IsPublic = !user.IsPrivate,
+                ProfileImageUrl = "/images/default-profile.png",
+                Skills = new(),
+                Educations = new(),
+                Experiences = new(),
+                Projects = new()
+            };
+
+            return View("MyProfile", vm); // återanvänd vyn
+        }
     }
 }
