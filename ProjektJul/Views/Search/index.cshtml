@@ -1,0 +1,54 @@
+@model Projekt.Web.ViewModels.SearchVm
+@using Projekt.Web.ViewModels
+
+@{
+    ViewData["Title"] = "Sök";
+    var results = ViewBag.Results as List<SearchResultItemVm>;
+}
+
+<h1>Sök användare</h1>
+
+<form asp-action="Index" method="post" class="mb-3">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Query" class="form-label">Namn</label>
+        <input asp-for="Query" class="form-control" placeholder="Skriv namn..." />
+        <span asp-validation-for="Query" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Sök</button>
+</form>
+
+@if (results != null)
+{
+    <h3>Resultat (@results.Count)</h3>
+
+    @if (!results.Any())
+    {
+        <p>Inga träffar.</p>
+    }
+    else
+    {
+        <ul class="list-group">
+            @foreach (var item in results)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <a asp-controller="Cv" asp-action="Details" asp-route-id="@item.UserId">
+                        @item.FullName
+                    </a>
+
+                    <span class="badge bg-secondary">
+                        @(item.IsPublic ? "Public" : "Private")
+                    </span>
+                </li>
+            }
+        </ul>
+    }
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
