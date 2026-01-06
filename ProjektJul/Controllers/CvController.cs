@@ -22,9 +22,11 @@ namespace Projekt.Web.Controllers
 
         public IActionResult MyProfile()
         {
-            var skillsFromDb = _context.Skills
-            .Select(s => s.Name)
-            .ToList();
+            var skillsFromDb = _context.Skills.ToList();
+
+            var utbildningarFromDb = _context.Utbildningar.ToList();
+
+            var erfarenheterFromDb = _context.Erfarenheter.ToList();
 
             var vm = new CvViewModel
             {
@@ -36,8 +38,8 @@ namespace Projekt.Web.Controllers
                 ProfileImageUrl = "/images/default-profile.png",
 
                 Skills = skillsFromDb,
-                Educations = new() { "Uppsala universitet" },
-                Experiences = new() { "Praktik – Backend" },
+                Utbildningar = utbildningarFromDb,
+                Erfarenheter = erfarenheterFromDb,
                 Projects = new() { "CV-portal", "API-projekt" }
             };
 
@@ -45,6 +47,8 @@ namespace Projekt.Web.Controllers
 
 
         }
+
+
 
         [HttpGet]
         public IActionResult Edit()
@@ -54,11 +58,12 @@ namespace Projekt.Web.Controllers
                 FirstName = "Elin",
                 LastName = "Sundell",
                 Address = "Östersund",
+                
                 IsPublic = true,
-                Skills = "C#, ASP.NET",
-                Education = "Uppsala universitet",
-                Experience = "Praktik inom backend",
 
+                Skills = _context.Skills.ToList(),
+                Utbildningar = _context.Utbildningar.ToList(),
+                Erfarenheter = _context.Erfarenheter.ToList(),
 
                 Projects = new List<ProjectCheckboxViewModel>
         {
@@ -81,36 +86,160 @@ namespace Projekt.Web.Controllers
 
             return RedirectToAction("MyProfile");
         }
-    
 
-    public IActionResult TestDb()
+
+
+
+        //----------------LÄGG TILL---------------------
+
+
+        [HttpGet]
+        public IActionResult AddEducation()
         {
-            var skill = new Skill
-            {
-                Name = "ASP.NET",
-             
-            };
-
-            _context.Skills.Add(skill);
-            int affectedRows = _context.SaveChanges();
-
-            return Content("Skill sparad!");
+            return View();
         }
 
-        public IActionResult TestUtbildning()
+      
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddEducation(CreateEducationViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             var utbildning = new Utbildning
             {
-                SchoolName = "Örebro Universitet",
-                Degree = "Systemvetenskap",
-                StartDate = new DateTime(2022, 8, 15),
-                EndDate = null
+                SchoolName = model.SchoolName,
+                Degree = model.Degree,
+                StartDate = model.StartDate,
+                EndDate = model.EndDate
             };
 
             _context.Utbildningar.Add(utbildning);
             _context.SaveChanges();
 
-            return RedirectToAction("MyProfile");
+            return RedirectToAction("Edit");
+        }
+
+        [HttpGet]
+        public IActionResult AddErfarenhet()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddErfarenhet(CreateErfarenhetViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var erfarenhet = new Erfarenhet
+            {
+                CompanyName = model.CompanyName,
+                Position = model.Position,
+                Description = model.Description,
+                StartDate = model.StartDate,
+                EndDate = model.EndDate,
+                UserId = null // kopplas senare
+            };
+
+            _context.Erfarenheter.Add(erfarenhet);
+            _context.SaveChanges();
+
+            return RedirectToAction("Edit");
+        }
+
+        [HttpGet]
+        public IActionResult AddSkill()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddSkill(CreateSkillViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var skill = new Skill
+            {
+                Name = model.Name,
+                Level = model.Level
+            };
+
+            _context.Skills.Add(skill);
+            _context.SaveChanges();
+
+            return RedirectToAction("Edit");
+        }
+
+
+        //-------------RADERA--------------------
+
+        [HttpGet]
+        public IActionResult DeleteUtbildningConfirm(int id)
+        {
+            var utbildning = _context.Utbildningar.Find(id);
+
+            if (utbildning == null)
+            {
+                return NotFound();
+            }
+
+            return View(utbildning);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteUtbildningConfirmed(int id)
+        {
+            var utbildning = _context.Utbildningar.Find(id);
+
+            if (utbildning != null)
+            {
+                _context.Utbildningar.Remove(utbildning);
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("Edit");
+        }
+
+
+        [HttpGet]
+        public IActionResult DeleteErfarenhetConfirm(int id)
+        {
+            var erfarenhet = _context.Erfarenheter.Find(id);
+
+            if (erfarenhet == null)
+            {
+                return NotFound();
+            }
+
+            return View(erfarenhet);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteErfarenhetConfirmed(int id)
+        {
+            var erfarenhet = _context.Erfarenheter.Find(id);
+
+            if (erfarenhet != null)
+            {
+                _context.Erfarenheter.Remove(erfarenhet);
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("Edit");
         }
 
 

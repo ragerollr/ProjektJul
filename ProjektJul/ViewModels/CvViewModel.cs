@@ -1,4 +1,7 @@
-﻿namespace Projekt.Web.ViewModels
+﻿using CVSite.Data.Models;
+using System.Collections.Generic;
+
+namespace Projekt.Web.ViewModels
 {
     public class CvViewModel
     {
@@ -9,9 +12,9 @@
         public bool IsPublic { get; set; }
         public string ProfileImageUrl { get; set; }
 
-        public List<string> Skills { get; set; }
-        public List<string> Educations { get; set; }
-        public List<string> Experiences { get; set; }
+        public List<Skill> Skills { get; set; }
+        public List<Utbildning> Utbildningar { get; set; } = new(); // new gör så att siddan  inte kraschar om listan är tom
+        public List<Erfarenhet> Erfarenheter { get; set; }
 
         public List<string> Projects { get; set; }
     }

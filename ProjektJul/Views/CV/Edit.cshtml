@@ -5,7 +5,7 @@
 }
 @model Projekt.Web.ViewModels.EditCvViewModel
 
-<hi>Edit CV</hi>
+<h1>Edit CV</h1>
 
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
 
@@ -31,26 +31,70 @@
         </label>
     </div>
 
-    <div>
-        <label>Skills</label>
-        <textarea asp-for="Skills"></textarea>
-    </div>
+    
 
 
-    <div>
-        <label>Education</label>
-        <textarea asp-for="Education"></textarea>
-    </div>
+    <hr />
 
-    <div>
-        <label>Experience</label>
-        <textarea asp-for="Experience"></textarea>
-    </div>
+    <a asp-controller="Cv"
+       asp-action="AddEducation">
+        + Lägg till utbildning
+    </a>
 
-    <div>
-        <label>Profile image</label>
-        <input asp-for="ProfileImage" type="file" />
-    </div>
+    @foreach (var u in Model.Utbildningar)
+    {
+        <div>
+            <strong>@u.SchoolName</strong> – @u.Degree
+            |
+            <a asp-action="DeleteUtbildningConfirm"
+               asp-route-id="@u.Id">
+                Ta bort
+            </a>
+        </div>
+    }
+
+    <hr />
+
+ 
+
+    <a asp-action="AddErfarenhet">+ Lägg till erfarenhet</a>
+
+    @foreach (var e in Model.Erfarenheter)
+    {
+        <div>
+            <strong>@e.Position</strong> – @e.CompanyName
+
+            <a asp-action="DeleteErfarenhetConfirm"
+               asp-route-id="@e.Id">
+                Ta bort
+            </a>
+
+        </div>
+    }
+
+    <hr />
+
+   
+
+    <a asp-action="AddSkill">+ Lägg till kompetens</a>
+
+    @if (Model.Skills != null && Model.Skills.Any())
+    {
+        <ul>
+            @foreach (var s in Model.Skills)
+            {
+                <li>
+                    <strong>@s.Name</strong> – nivå @s.Level / 5
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>Inga kompetenser tillagda.</p>
+    }
+
+    <hr />
 
     <h3>Projects</h3>
 
@@ -65,6 +109,14 @@
         </div>
     }
 
+    <hr />
+
+    <div>
+        <label>Profile image</label>
+        <input asp-for="ProfileImage" type="file" />
+    </div>
+
+    <hr />
 
     <button type="submit">Save</button>
 

@@ -26,7 +26,7 @@ namespace CVSite.Data.Models
         public DateTime? EndDate { get; set; } // Kan vara null ifall man fortfarande jobbar där. 
         
         [ForeignKey(nameof(User))]
-        public string UserId { get; set; }
-        public virtual ApplicationUser User { get; set; }
+        public string? UserId { get; set; }
+        public virtual ApplicationUser? User { get; set; }
     }
 }

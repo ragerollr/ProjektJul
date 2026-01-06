@@ -1,0 +1,54 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model Projekt.Web.ViewModels.CreateEducationViewModel
+
+<h2>Lägg till utbildning</h2>
+
+<form asp-action="AddEducation" method="post">
+@Html.AntiForgeryToken()
+
+    <div>
+        <label>Skola</label><br />
+        <input asp-for="SchoolName" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Utbildning / Examen</label><br />
+        <input asp-for="Degree" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Startdatum</label><br />
+        <input asp-for="StartDate" type="date" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Slutdatum</label><br />
+        <input asp-for="EndDate" type="date" />
+    </div>
+
+    <br />
+
+    <button type="submit">Spara</button>
+
+
+    <hr />
+
+    <a asp-controller="Cv"
+       asp-action="Edit">
+        ← Tillbaka till redigera profil
+    </a>
+
+</form>
+
+

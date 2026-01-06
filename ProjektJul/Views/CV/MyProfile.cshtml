@@ -7,11 +7,6 @@
 @model Projekt.Web.ViewModels.CvViewModel
 
 
-<div class="mb-3">
-    <a asp-action="Edit" class="btn btn-primary">
-        Edit profile
-    </a>
-</div>
 
 
 <h1>@Model.FullName</h1>
@@ -22,13 +17,73 @@
 <p><strong>Address:</strong> @Model.Address</p>
 <p><strong>Status:</strong> @(Model.IsPublic ? "Public" : "Private")</p>
 
+<h3>Utbildning</h3>
+
+@if (Model.Utbildningar.Any()) //Kollar om det finns något alls
+{
+    <ul>
+        @foreach (var utbildning in Model.Utbildningar)
+        {
+            <li>
+                <strong>@utbildning.SchoolName</strong><br />
+                @utbildning.Degree <br />
+                @utbildning.StartDate.Year –
+                @(utbildning.EndDate?.Year.ToString() ?? "Pågående")
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Ingen utbildning tillagd ännu.</p>
+}
+
+<h3>Erfarenhet</h3>
+
+@if (Model.Erfarenheter != null && Model.Erfarenheter.Any())
+{
+    <ul>
+        @foreach (var e in Model.Erfarenheter)
+        {
+            <li>
+                <strong>@e.Position</strong> – @e.CompanyName <br />
+                @e.StartDate.ToString("yyyy-MM")
+                –
+                @(e.EndDate.HasValue? e.EndDate.Value.ToString("yyyy-MM") : "Pågående")
+
+                @if (!string.IsNullOrEmpty(e.Description))
+                {
+                    <div>@e.Description</div>
+                }
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Inga erfarenheter tillagda än.</p>
+}
+
+
 <h3>Kompetenser</h3>
-<ul>
-    @foreach (var skill in Model.Skills)
-    {
-        <li>@skill</li>
-    }
-</ul>
+
+@if (Model.Skills != null && Model.Skills.Any())
+{
+    <ul>
+        @foreach (var s in Model.Skills)
+        {
+            <li>
+                <strong>@s.Name</strong> – nivå @s.Level / 5
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Inga kompetenser tillagda.</p>
+}
+
+
 
 <h3>Projekt</h3>
 <ul>
@@ -38,4 +93,9 @@
     }
 </ul>
 
-<a asp-action="Edit">Edit profile</a>
+
+<div class="mb-3">
+    <a asp-action="Edit" class="btn btn-primary">
+        Edit profile
+    </a>
+</div>
