@@ -19,21 +19,27 @@ namespace Projekt.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            // Uni-nivå: startsidan ska inte lista privata profiler (krav 6)
-            var featured = await _db.Users
+            //startsidan ska inte lista privata profiler (krav 6)
+            var users = await _db.Users
+                .Include(u => u.Erfarenheter)
+                .Include(u => u.Utbildningar)
+                .Include(u => u.Skills)
                 .Where(u => !u.IsPrivate)
-                .OrderBy(u => u.FullName ?? u.Email)
+                .OrderByDescending(u => u.FullName)
                 .Take(6)
-                .Select(u => new CvModel
-                {
-                    FullName = u.FullName ?? u.Email ?? "Okänd",
-                    Title = "Profil", // koppla senare till riktig titel
-                    Summary = "Klicka för att se profil.",
-                    ProfileUrl = Url.Action("Details", "Cv", new { id = u.Id }) ?? $"/Cv/Details/{u.Id}",
-                    AvatarUrl = "https://via.placeholder.com/120"
-                })
                 .ToListAsync();
 
+            var featured = users.Select(u => new CvModel
+            {
+                FullName = u.FullName,
+                Title = u.Erfarenheter.FirstOrDefault()?.Position ?? "Ingen titel",
+                Summary = u.Skills.Any() ? string.Join(", ", u.Skills.Select(s => s.Name)) : "Inga färdigheter angivna",
+                ProfileUrl = Url.Action("Details", "Cv", new { userId = u.Id }),
+                AvatarUrl = "https://via.placeholder.com/150" // Placeholder
+
+            }).ToList();
+
+            
             var vm = new IndexVm
             {
                 FeaturedCvs = featured,
