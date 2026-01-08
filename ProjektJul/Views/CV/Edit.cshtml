@@ -46,6 +46,13 @@
         <div>
             <strong>@u.SchoolName</strong> – @u.Degree
             |
+           
+            <a asp-action="EditUtbildning"
+               asp-route-id="@u.Id">
+                Redigera
+            </a>
+            |
+
             <a asp-action="DeleteUtbildningConfirm"
                asp-route-id="@u.Id">
                 Ta bort
@@ -63,6 +70,13 @@
     {
         <div>
             <strong>@e.Position</strong> – @e.CompanyName
+
+            |
+            <a asp-action="EditErfarenhet"
+               asp-route-id="@e.Id">
+                Redigera
+            </a>
+            |
 
             <a asp-action="DeleteErfarenhetConfirm"
                asp-route-id="@e.Id">
@@ -85,6 +99,11 @@
             {
                 <li>
                     <strong>@s.Name</strong> – nivå @s.Level / 5
+                    |                 
+                    <a asp-action="EditSkill"
+                    asp-route-id="@s.Id">
+                    Redigera
+                    </a>
                 </li>
             }
         </ul>

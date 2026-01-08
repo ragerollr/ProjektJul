@@ -313,5 +313,155 @@ namespace Projekt.Web.Controllers
 
             return RedirectToAction(nameof(Edit));
         }
+
+
+        // =========================
+        // Redigera Skill
+        // =========================
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> EditSkill(int id)
+        {
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var skill = await _db.Skills.FirstOrDefaultAsync(s => s.Id == id && s.UserId == myId);
+            if (skill == null) return NotFound();
+
+            return View(skill);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditSkill(Skill form)
+        {
+            ModelState.Remove("User");
+
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var skill = await _db.Skills
+                .FirstOrDefaultAsync(s => s.Id == form.Id && s.UserId == myId);
+
+            if (skill == null)
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return View(form);
+
+            skill.Name = form.Name;
+            skill.Level = form.Level;
+
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Edit));
+        }
+
+
+
+        // =========================
+        // Redigera Utbildning
+        // =========================
+
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> EditUtbildning(int id)
+        {
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var utbildning = await _db.Utbildningar
+                .FirstOrDefaultAsync(u => u.Id == id && u.UserId == myId);
+
+            if (utbildning == null)
+                return NotFound();
+
+            return View(utbildning);
+        }
+
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditUtbildning(Utbildning form)
+        {
+            ModelState.Remove("User");
+
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var utbildning = await _db.Utbildningar
+                .FirstOrDefaultAsync(u => u.Id == form.Id && u.UserId == myId);
+
+            if (utbildning == null)
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return View(form);
+
+            utbildning.SchoolName = form.SchoolName;
+            utbildning.Degree = form.Degree;
+            utbildning.StartDate = form.StartDate;
+            utbildning.EndDate = form.EndDate;
+
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Edit));
+        }
+
+
+        // =========================
+        // Redigera Erfarenhet
+        // =========================
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> EditErfarenhet(int id)
+        {
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var erfarenhet = await _db.Erfarenheter
+                .FirstOrDefaultAsync(e => e.Id == id && e.UserId == myId);
+
+            if (erfarenhet == null)
+                return NotFound();
+
+            return View(erfarenhet);
+        }
+
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditErfarenhet(Erfarenhet form)
+        {
+            ModelState.Remove("User");
+
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var erfarenhet = await _db.Erfarenheter
+                .FirstOrDefaultAsync(e => e.Id == form.Id && e.UserId == myId);
+
+            if (erfarenhet == null)
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return View(form);
+
+            erfarenhet.CompanyName = form.CompanyName;
+            erfarenhet.Position = form.Position;
+            erfarenhet.Description = form.Description;
+            erfarenhet.StartDate = form.StartDate;
+            erfarenhet.EndDate = form.EndDate;
+
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Edit));
+        }
+
+
+
+
+
+
     }
 }
