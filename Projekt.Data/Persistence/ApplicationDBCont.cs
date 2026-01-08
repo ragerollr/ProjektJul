@@ -21,4 +21,5 @@ namespace Projekt.Data.Persistence
         // Messages (krav inbox/notifiering)
         public DbSet<Message> Messages { get; set; } = default!;
     }
+
 }
