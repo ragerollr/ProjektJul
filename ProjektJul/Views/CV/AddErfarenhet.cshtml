@@ -1,0 +1,56 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+
+@model Projekt.Web.ViewModels.CreateErfarenhetViewModel
+
+<h2>Lägg till erfarenhet</h2>
+
+<form asp-action="AddErfarenhet" method="post">
+    @Html.AntiForgeryToken()
+
+    <div>
+        <label>Företag</label><br />
+        <input asp-for="CompanyName" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Position</label><br />
+        <input asp-for="Position" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Beskrivning</label><br />
+        <textarea asp-for="Description"></textarea>
+    </div>
+
+    <br />
+
+    <div>
+        <label>Startdatum</label><br />
+        <input asp-for="StartDate" type="date" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Slutdatum</label><br />
+        <input asp-for="EndDate" type="date" />
+    </div>
+
+    <br />
+
+    <button type="submit">Spara</button>
+
+    <hr />
+
+    <a asp-action="Edit">← Tillbaka till redigera profil</a>
+</form>
+

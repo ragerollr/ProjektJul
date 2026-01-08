@@ -13,8 +13,8 @@ namespace CVSite.Data.Models
         public string Name { get; set; } = string.Empty; //Namn på skillen t.ex C#, Java, Projektledning etc.
         [Range(1, 5)]
         public int Level { get; set; } // Hur bra man är på en skala 1-5
-        [ForeignKey(nameof(User))]
-        public string UserId { get; set; } = string.Empty;
-        public virtual ApplicationUser User { get; set; } = null!;
+       // [ForeignKey(nameof(User))]
+       // public string? UserId { get; set; } = string.Empty;
+       // public virtual ApplicationUser User { get; set; } = null!;
     }
 }

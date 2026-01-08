@@ -1,0 +1,33 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model Projekt.Web.ViewModels.CreateSkillViewModel
+
+<h2>Lägg till kompetens</h2>
+
+<form asp-action="AddSkill" method="post">
+    @Html.AntiForgeryToken()
+
+    <div>
+        <label>Kompetens</label><br />
+        <input asp-for="Name" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Nivå (1–5)</label><br />
+        <input asp-for="Level" type="number" min="1" max="5" />
+    </div>
+
+    <br />
+
+    <button type="submit">Spara</button>
+
+    <hr />
+
+    <a asp-action="Edit">← Tillbaka</a>
+</form>

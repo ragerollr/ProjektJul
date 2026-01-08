@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CVSite.Data.Models;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using static Projekt.Web.ViewModels.ProjectCheckBoxViewModel;
 
@@ -16,9 +17,9 @@ namespace Projekt.Web.ViewModels
 
 
         // CV-uppgifter
-        public string Skills { get; set; }
-        public string Education { get; set; }
-        public string Experience { get; set; }
+        //public string Skills { get; set; }
+        //public string Education { get; set; }
+        //public string Experience { get; set; }
 
         //Profilbild
         public IFormFile ProfileImage { get; set; }
@@ -26,6 +27,11 @@ namespace Projekt.Web.ViewModels
         //Project
 
         public List<ProjectCheckboxViewModel> Projects { get; set; }
+
+        public List<Utbildning> Utbildningar { get; set; }
+        public List<Erfarenhet> Erfarenheter { get; set; }
+        public List<Skill> Skills { get; set; }
+
 
 
     }

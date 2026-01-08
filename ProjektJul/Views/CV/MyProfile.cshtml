@@ -1,15 +1,13 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-
-@model Projekt.Web.ViewModels.CvViewModel
+﻿@model Projekt.Web.ViewModels.CvViewModel
 
 <div class="mb-3">
-    <a asp-action="Edit" class="btn btn-primary">
-        Edit profile
-    </a>
+    @* Edit ska bara vara för inloggade (annars kan vem som helst försöka edit:a) *@
+    @if (User.Identity?.IsAuthenticated ?? false)
+    {
+        <a asp-action="Edit" class="btn btn-primary">
+            Edit profile
+        </a>
+    }
 </div>
 
 <h1>@Model.FullName</h1>
@@ -20,15 +18,85 @@
 <p><strong>Address:</strong> @Model.Address</p>
 <p><strong>Status:</strong> @(Model.IsPublic ? "Public" : "Private")</p>
 
-<h3>Projekt</h3>
-<ul>
-    @foreach (var project in Model.Projects)
-    {
-        <li>@project</li>
-    }
-</ul>
+<h3>Utbildning</h3>
 
-<a asp-action="Edit">Edit profile</a>
+@if (Model.Utbildningar != null && Model.Utbildningar.Any())
+{
+    <ul>
+        @foreach (var utbildning in Model.Utbildningar)
+        {
+            <li>
+                <strong>@utbildning.SchoolName</strong><br />
+                @utbildning.Degree <br />
+                @utbildning.StartDate.Year –
+                @(utbildning.EndDate?.Year.ToString() ?? "Pågående")
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Ingen utbildning tillagd ännu.</p>
+}
+
+<h3>Erfarenhet</h3>
+
+@if (Model.Erfarenheter != null && Model.Erfarenheter.Any())
+{
+    <ul>
+        @foreach (var e in Model.Erfarenheter)
+        {
+            <li>
+                <strong>@e.Position</strong> – @e.CompanyName <br />
+                @e.StartDate.ToString("yyyy-MM")
+                –
+                @(e.EndDate.HasValue ? e.EndDate.Value.ToString("yyyy-MM") : "Pågående")
+
+                @if (!string.IsNullOrEmpty(e.Description))
+                {
+                    <div>@e.Description</div>
+                }
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Inga erfarenheter tillagda än.</p>
+}
+
+<h3>Kompetenser</h3>
+
+@if (Model.Skills != null && Model.Skills.Any())
+{
+    <ul>
+        @foreach (var s in Model.Skills)
+        {
+            <li>
+                <strong>@s.Name</strong> – nivå @s.Level / 5
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Inga kompetenser tillagda.</p>
+}
+
+<h3>Projekt</h3>
+@if (Model.Projects != null && Model.Projects.Any())
+{
+    <ul>
+        @foreach (var project in Model.Projects)
+        {
+            <li>@project</li>
+        }
+    </ul>
+}
+else
+{
+    <p>Inga projekt att visa.</p>
+}
 
 <hr />
 
@@ -46,7 +114,6 @@
 <form asp-controller="Messages" asp-action="Send" method="post">
     @Html.AntiForgeryToken()
 
-    <!-- Mottagarens UserId (måste finnas i CvViewModel) -->
     <input type="hidden" name="ToUserId" value="@Model.UserId" />
 
     @if (!(User.Identity?.IsAuthenticated ?? false))

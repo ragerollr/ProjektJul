@@ -1,9 +1,7 @@
-﻿using CVSite.Data.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Projekt.Data.Identity;
 using Projekt.Data.Models;
-
 
 namespace Projekt.Data.Persistence
 {
@@ -14,11 +12,14 @@ namespace Projekt.Data.Persistence
         {
         }
 
-        public DbSet<Erfarenhet> Erfarenhets { get; set; }
-        public DbSet<Skill> Skills { get; set; }
-        public DbSet<Projects> Projekts { get; set; }
-        public DbSet<Utbildning> Utildningar { get; set; }
-        public DbSet<Message> Messages => Set<Message>();
+        public DbSet<Erfarenhet> Erfarenheter { get; set; } = default!;
+        public DbSet<Skill> Skills { get; set; } = default!;
+        public DbSet<Projects> Projekts { get; set; } = default!;
 
+        // Rättstavat: Utbildningar (inte Utildningar)
+        public DbSet<Utbildning> Utbildningar { get; set; } = default!;
+
+        // Behåll Messages för Inbox + Notifikationer
+        public DbSet<Message> Messages => Set<Message>();
     }
 }
