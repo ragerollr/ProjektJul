@@ -17,44 +17,65 @@ namespace Projekt.Web.Controllers
             _db = db;
         }
 
+
         public async Task<IActionResult> Index()
         {
-            //startsidan ska inte lista privata profiler (krav 6)
+            var vm = new IndexVm
+            {
+                FeaturedCvs = await GetFeaturedProfilesAsync(),
+                LatestProject = await GetLatestProjectAsync()
+            };
+
+            return View(vm);
+        }
+
+        //Metod för att hämta ut profiler från databasen
+        private async Task<List<CvModel>> GetFeaturedProfilesAsync()
+        {
+            // Hämta data från databasen
             var users = await _db.Users
                 .Include(u => u.Erfarenheter)
-                .Include(u => u.Utbildningar)
                 .Include(u => u.Skills)
                 .Where(u => !u.IsPrivate)
                 .OrderByDescending(u => u.FullName)
                 .Take(6)
                 .ToListAsync();
 
-            var featured = users.Select(u => new CvModel
+            // Mappa till CvModel
+            return users.Select(u => new CvModel
             {
-                FullName = u.FullName,
+                FullName = u.FullName ?? "Okänd",
                 Title = u.Erfarenheter.FirstOrDefault()?.Position ?? "Ingen titel",
-                Summary = u.Skills.Any() ? string.Join(", ", u.Skills.Select(s => s.Name)) : "Inga färdigheter angivna",
-                ProfileUrl = Url.Action("Details", "Cv", new { userId = u.Id }),
-                AvatarUrl = "https://via.placeholder.com/150" // Placeholder
-
+                Summary = u.Skills.Any()
+                    ? string.Join(", ", u.Skills.Select(s => s.Name))
+                    : "Inga färdigheter angivna",
+                ProfileUrl = Url.Action("Details", "Cv", new { id = u.Id }) ?? $"/Cv/Details/{u.Id}",
+                AvatarUrl = "https://via.placeholder.com/150"
             }).ToList();
+        }
 
-            
-            var vm = new IndexVm
+        //Metod för att hämta det senaste projektet från databasen
+        private async Task<ProjektModel?> GetLatestProjectAsync()
+        {
+            var projectEntity = await _db.Projekts
+                .Include(p => p.User)
+                .OrderByDescending(p => p.Id)
+                .FirstOrDefaultAsync();
+
+            if (projectEntity == null) return null;
+
+            // Mappa till ProjektModel
+            return new ProjektModel
             {
-                FeaturedCvs = featured,
-                LatestProject = new ProjektModel
-                {
-                    Id = 1,
-                    Title = "Kundportal för logistik",
-                    Summary = "Ett program för att hantera transporter och spåra leveranser i realtid.",
-                    PublishedAt = DateTime.UtcNow.AddDays(-3),
-                    DetailUrl = "/project/details/1",
-                    ImageUrl = "https://via.placeholder.com/800x400"
-                }
+                Id = projectEntity.Id,
+                Title = projectEntity.Title,
+                Summary = projectEntity.Description.Length > 500
+                    ? projectEntity.Description.Substring(0, 500) + "..."
+                    : projectEntity.Description,
+                PublishedAt = DateTime.Now, // Eller ditt CreatedDate om du fixade det
+                DetailUrl = Url.Action("Details", "Projects", new { id = projectEntity.Id }) ?? $"/Projects/Details/{projectEntity.Id}",
+                ImageUrl = "https://via.placeholder.com/800x400?text=" + Uri.EscapeDataString(projectEntity.Title)
             };
-
-            return View(vm);
         }
 
         // Viktigt: om något fortfarande pekar på /Home/MyProfile, skicka vidare rätt.
