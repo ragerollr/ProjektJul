@@ -1,3 +1,4 @@
+using CVSite.Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -32,35 +33,27 @@ namespace Projekt.Web.Controllers
             if (user == null)
                 return RedirectToAction("Login", "Account");
 
-            // OBS: Er data verkar inte vara kopplad till userId ännu i era tabeller.
-            // Därför visar vi "allt" just nu (som i din kompis kod), tills ni kopplar per user.
-            var skillsFromDb = await _db.Skills.ToListAsync();
-            var utbildningarFromDb = await _db.Utbildningar.ToListAsync();
-            var erfarenheterFromDb = await _db.Erfarenheter.ToListAsync();
-
             var vm = new CvViewModel
             {
                 UserId = user.Id,
                 FullName = user.FullName ?? user.Email ?? "Okänd",
                 Email = user.Email ?? "",
-                Address = "",
+                Address = "", // koppla senare till riktig adress om ni vill
                 IsPublic = !user.IsPrivate,
                 ProfileImageUrl = "/images/default-profile.png",
 
-                // Dessa properties måste matcha CvViewModel ni använder i projektet:
-                Skills = skillsFromDb,
-                Utbildningar = utbildningarFromDb,
-                Erfarenheter = erfarenheterFromDb,
+                Skills = await _db.Skills.Where(s => s.UserId == myId).ToListAsync(),
+                Utbildningar = await _db.Utbildningar.Where(u => u.UserId == myId).ToListAsync(),
+                Erfarenheter = await _db.Erfarenheter.Where(e => e.UserId == myId).ToListAsync(),
 
-                Projects = new() { "CV-portal", "API-projekt" }
+                Projects = new() { "CV-portal", "API-projekt" } // koppla senare
             };
 
-            // Säkert oavsett mapp-case (CV vs Cv)
             return View("~/Views/CV/MyProfile.cshtml", vm);
         }
 
         // ============================================
-        // KRAV 5/6/7 (+ för meddelanden / details-sida)
+        // KRAV 5/6/7: Visa en specifik användares CV
         // ============================================
         [HttpGet]
         public async Task<IActionResult> Details(string id)
@@ -80,10 +73,6 @@ namespace Projekt.Web.Controllers
                 return RedirectToAction("Login", "Account", new { returnUrl });
             }
 
-            var skillsFromDb = await _db.Skills.ToListAsync();
-            var utbildningarFromDb = await _db.Utbildningar.ToListAsync();
-            var erfarenheterFromDb = await _db.Erfarenheter.ToListAsync();
-
             var vm = new CvViewModel
             {
                 UserId = user.Id,
@@ -93,9 +82,9 @@ namespace Projekt.Web.Controllers
                 IsPublic = !user.IsPrivate,
                 ProfileImageUrl = "/images/default-profile.png",
 
-                Skills = skillsFromDb,
-                Utbildningar = utbildningarFromDb,
-                Erfarenheter = erfarenheterFromDb,
+                Skills = await _db.Skills.Where(s => s.UserId == id).ToListAsync(),
+                Utbildningar = await _db.Utbildningar.Where(u => u.UserId == id).ToListAsync(),
+                Erfarenheter = await _db.Erfarenheter.Where(e => e.UserId == id).ToListAsync(),
 
                 Projects = new() { "CV-portal", "API-projekt" }
             };
@@ -104,23 +93,30 @@ namespace Projekt.Web.Controllers
         }
 
         // =========================
-        // (Om ni har Edit-sidan kvar)
+        // Edit (visar listor + profilinfo placeholder)
         // =========================
         [Authorize]
         [HttpGet]
-        public IActionResult Edit()
+        public async Task<IActionResult> Edit()
         {
-            // Om ni redan har en Edit.cshtml som bygger på EditCvViewModel:
-            // Behåll enkel default så länge.
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(myId))
+                return RedirectToAction("Login", "Account");
+
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == myId);
+            if (user == null)
+                return RedirectToAction("Login", "Account");
+
             var vm = new EditCvViewModel
             {
-                FirstName = "",
-                LastName = "",
-                Address = "",
-                IsPublic = true,
-                Skills = "",
-                Education = "",
-                Experience = "",
+                FirstName = (user.FullName ?? "").Split(' ').FirstOrDefault() ?? "",
+                LastName = (user.FullName ?? "").Split(' ').Skip(1).FirstOrDefault() ?? "",
+                Address = "", // koppla till riktig adress om ni har fält
+                IsPublic = !user.IsPrivate,
+
+                Skills = await _db.Skills.Where(s => s.UserId == myId).ToListAsync(),
+                Utbildningar = await _db.Utbildningar.Where(u => u.UserId == myId).ToListAsync(),
+                Erfarenheter = await _db.Erfarenheter.Where(e => e.UserId == myId).ToListAsync(),
                 Projects = new()
             };
 
@@ -130,61 +126,73 @@ namespace Projekt.Web.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(EditCvViewModel model)
+        public async Task<IActionResult> Edit(EditCvViewModel model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(myId))
+                return RedirectToAction("Login", "Account");
 
-            // När ni kopplar riktig profil-data: spara här.
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == myId);
+            if (user == null)
+                return RedirectToAction("Login", "Account");
+
+            // Spara profilinfo (krav 3)
+            user.FullName = $"{model.FirstName} {model.LastName}".Trim();
+            user.IsPrivate = !model.IsPublic;
+
+            await _db.SaveChangesAsync();
+
             return RedirectToAction(nameof(MyProfile));
         }
 
         // =========================
-        // -------- LÄGG TILL -------
+        // Add Education
         // =========================
         [Authorize]
         [HttpGet]
-        public IActionResult AddEducation()
-        {
-            return View();
-        }
+        public IActionResult AddEducation() => View();
 
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddEducation(CreateEducationViewModel model)
+        public async Task<IActionResult> AddEducation(CreateEducationViewModel model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
+            if (!ModelState.IsValid) return View(model);
+
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(myId)) return RedirectToAction("Login", "Account");
 
             var utbildning = new Utbildning
             {
                 SchoolName = model.SchoolName,
                 Degree = model.Degree,
                 StartDate = model.StartDate,
-                EndDate = model.EndDate
+                EndDate = model.EndDate,
+                UserId = myId
             };
 
             _db.Utbildningar.Add(utbildning);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             return RedirectToAction(nameof(Edit));
         }
 
+        // =========================
+        // Add Experience
+        // =========================
         [Authorize]
         [HttpGet]
-        public IActionResult AddErfarenhet()
-        {
-            return View();
-        }
+        public IActionResult AddErfarenhet() => View();
 
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddErfarenhet(CreateErfarenhetViewModel model)
+        public async Task<IActionResult> AddErfarenhet(CreateErfarenhetViewModel model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
+            if (!ModelState.IsValid) return View(model);
+
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(myId)) return RedirectToAction("Login", "Account");
 
             var erfarenhet = new Erfarenhet
             {
@@ -193,51 +201,59 @@ namespace Projekt.Web.Controllers
                 Description = model.Description,
                 StartDate = model.StartDate,
                 EndDate = model.EndDate,
-                UserId = null // kopplas senare när ni binder till inloggad användare
+                UserId = myId
             };
 
             _db.Erfarenheter.Add(erfarenhet);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             return RedirectToAction(nameof(Edit));
         }
 
+        // =========================
+        // Add Skill
+        // =========================
         [Authorize]
         [HttpGet]
-        public IActionResult AddSkill()
-        {
-            return View();
-        }
+        public IActionResult AddSkill() => View();
 
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddSkill(CreateSkillViewModel model)
+        public async Task<IActionResult> AddSkill(CreateSkillViewModel model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
+            if (!ModelState.IsValid) return View(model);
+
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(myId)) return RedirectToAction("Login", "Account");
 
             var skill = new Skill
             {
                 Name = model.Name,
-                Level = model.Level
+                Level = model.Level,
+                UserId = myId
             };
 
             _db.Skills.Add(skill);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             return RedirectToAction(nameof(Edit));
         }
 
         // =========================
-        // -------- RADERA ----------
+        // Delete Education
         // =========================
         [Authorize]
         [HttpGet]
-        public IActionResult DeleteUtbildningConfirm(int id)
+        public async Task<IActionResult> DeleteUtbildningConfirm(int id)
         {
-            var utbildning = _db.Utbildningar.Find(id);
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(myId)) return RedirectToAction("Login", "Account");
+
+            var utbildning = await _db.Utbildningar.FirstOrDefaultAsync(u => u.Id == id);
             if (utbildning == null) return NotFound();
+
+            if (utbildning.UserId != myId) return Forbid();
 
             return View(utbildning);
         }
@@ -245,24 +261,36 @@ namespace Projekt.Web.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteUtbildningConfirmed(int id)
+        public async Task<IActionResult> DeleteUtbildningConfirmed(int id)
         {
-            var utbildning = _db.Utbildningar.Find(id);
-            if (utbildning != null)
-            {
-                _db.Utbildningar.Remove(utbildning);
-                _db.SaveChanges();
-            }
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(myId)) return RedirectToAction("Login", "Account");
+
+            var utbildning = await _db.Utbildningar.FirstOrDefaultAsync(u => u.Id == id);
+            if (utbildning == null) return NotFound();
+
+            if (utbildning.UserId != myId) return Forbid();
+
+            _db.Utbildningar.Remove(utbildning);
+            await _db.SaveChangesAsync();
 
             return RedirectToAction(nameof(Edit));
         }
 
+        // =========================
+        // Delete Experience
+        // =========================
         [Authorize]
         [HttpGet]
-        public IActionResult DeleteErfarenhetConfirm(int id)
+        public async Task<IActionResult> DeleteErfarenhetConfirm(int id)
         {
-            var erfarenhet = _db.Erfarenheter.Find(id);
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(myId)) return RedirectToAction("Login", "Account");
+
+            var erfarenhet = await _db.Erfarenheter.FirstOrDefaultAsync(e => e.Id == id);
             if (erfarenhet == null) return NotFound();
+
+            if (erfarenhet.UserId != myId) return Forbid();
 
             return View(erfarenhet);
         }
@@ -270,14 +298,18 @@ namespace Projekt.Web.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteErfarenhetConfirmed(int id)
+        public async Task<IActionResult> DeleteErfarenhetConfirmed(int id)
         {
-            var erfarenhet = _db.Erfarenheter.Find(id);
-            if (erfarenhet != null)
-            {
-                _db.Erfarenheter.Remove(erfarenhet);
-                _db.SaveChanges();
-            }
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(myId)) return RedirectToAction("Login", "Account");
+
+            var erfarenhet = await _db.Erfarenheter.FirstOrDefaultAsync(e => e.Id == id);
+            if (erfarenhet == null) return NotFound();
+
+            if (erfarenhet.UserId != myId) return Forbid();
+
+            _db.Erfarenheter.Remove(erfarenhet);
+            await _db.SaveChangesAsync();
 
             return RedirectToAction(nameof(Edit));
         }
