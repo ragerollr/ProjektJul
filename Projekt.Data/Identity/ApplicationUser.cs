@@ -8,5 +8,8 @@ namespace Projekt.Data.Identity
         public string? Address { get; set; }
         public bool IsPrivate { get; set; }
 
+        public string? ProfileImagePath { get; set; }
+
+
     }
 }

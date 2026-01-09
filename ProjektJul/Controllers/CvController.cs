@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Projekt.Data.Models;
 using Projekt.Data.Persistence;
 using Projekt.Web.ViewModels;
+using System.Net;
 using System.Security.Claims;
 
 namespace Projekt.Web.Controllers
@@ -13,9 +14,13 @@ namespace Projekt.Web.Controllers
     {
         private readonly ApplicationDbContext _db;
 
-        public CvController(ApplicationDbContext db)
+        private readonly IWebHostEnvironment _env;
+
+
+        public CvController(ApplicationDbContext db, IWebHostEnvironment env)
         {
             _db = db;
+            _env = env;
         }
 
         // =========================
@@ -38,9 +43,15 @@ namespace Projekt.Web.Controllers
                 UserId = user.Id,
                 FullName = user.FullName ?? user.Email ?? "Okänd",
                 Email = user.Email ?? "",
-                Address = "", // koppla senare till riktig adress om ni vill
+                Address = user.Address ?? "",
+
                 IsPublic = !user.IsPrivate,
-                ProfileImageUrl = "/images/default-profile.png",
+                
+                // PROFILBILD
+                ProfileImageUrl = string.IsNullOrEmpty(user.ProfileImagePath)
+                ? "/images/default-profile.png"
+    :           user.ProfileImagePath,
+
 
                 Skills = await _db.Skills.Where(s => s.UserId == myId).ToListAsync(),
                 Utbildningar = await _db.Utbildningar.Where(u => u.UserId == myId).ToListAsync(),
@@ -80,7 +91,10 @@ namespace Projekt.Web.Controllers
                 Email = user.Email ?? "",
                 Address = "",
                 IsPublic = !user.IsPrivate,
-                ProfileImageUrl = "/images/default-profile.png",
+                ProfileImageUrl = string.IsNullOrEmpty(user.ProfileImagePath)
+                ? "/images/default-profile.png"
+               : user.ProfileImagePath,
+
 
                 Skills = await _db.Skills.Where(s => s.UserId == id).ToListAsync(),
                 Utbildningar = await _db.Utbildningar.Where(u => u.UserId == id).ToListAsync(),
@@ -111,7 +125,8 @@ namespace Projekt.Web.Controllers
             {
                 FirstName = (user.FullName ?? "").Split(' ').FirstOrDefault() ?? "",
                 LastName = (user.FullName ?? "").Split(' ').Skip(1).FirstOrDefault() ?? "",
-                Address = "", // koppla till riktig adress om ni har fält
+                Address = user.Address ?? "",
+                Email = user.Email ?? "",
                 IsPublic = !user.IsPrivate,
 
                 Skills = await _db.Skills.Where(s => s.UserId == myId).ToListAsync(),
@@ -132,18 +147,63 @@ namespace Projekt.Web.Controllers
             if (string.IsNullOrWhiteSpace(myId))
                 return RedirectToAction("Login", "Account");
 
+            if (!ModelState.IsValid)
+            {
+                // ladda om listor så Edit-vyn inte går sönder
+                model.Skills = await _db.Skills.Where(s => s.UserId == myId).ToListAsync();
+                model.Utbildningar = await _db.Utbildningar.Where(u => u.UserId == myId).ToListAsync();
+                model.Erfarenheter = await _db.Erfarenheter.Where(e => e.UserId == myId).ToListAsync();
+
+                return View(model);
+            }
+
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == myId);
             if (user == null)
                 return RedirectToAction("Login", "Account");
 
-            // Spara profilinfo (krav 3)
+            // ===== Spara PROFILINFO (krav 4b) =====
             user.FullName = $"{model.FirstName} {model.LastName}".Trim();
+            user.Address = model.Address;
+            user.Email = model.Email;
+            user.UserName = model.Email; // om email används som login
             user.IsPrivate = !model.IsPublic;
+
+            // PROFILBILD
+
+            if (model.ProfileImage != null && model.ProfileImage.Length > 0)
+            {
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+                var extension = Path.GetExtension(model.ProfileImage.FileName).ToLower();
+
+                if (!allowedExtensions.Contains(extension))
+                {
+                    ModelState.AddModelError("ProfileImage", "Endast JPG eller PNG är tillåtet");
+
+                    model.Skills = await _db.Skills.Where(s => s.UserId == myId).ToListAsync();
+                    model.Utbildningar = await _db.Utbildningar.Where(u => u.UserId == myId).ToListAsync();
+                    model.Erfarenheter = await _db.Erfarenheter.Where(e => e.UserId == myId).ToListAsync();
+
+                    return View(model);
+                }
+
+                var uploadsFolder = Path.Combine(_env.WebRootPath, "images", "profiles");
+                Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = Guid.NewGuid() + extension;
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using var stream = new FileStream(filePath, FileMode.Create);
+                await model.ProfileImage.CopyToAsync(stream);
+
+                user.ProfileImagePath = "/images/profiles/" + fileName;
+            }
+
 
             await _db.SaveChangesAsync();
 
             return RedirectToAction(nameof(MyProfile));
         }
+
 
         // =========================
         // Add Education
