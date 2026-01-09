@@ -50,7 +50,8 @@ namespace Projekt.Web.Controllers
                     ? string.Join(", ", u.Skills.Select(s => s.Name))
                     : "Inga färdigheter angivna",
                 ProfileUrl = Url.Action("Details", "Cv", new { id = u.Id }) ?? $"/Cv/Details/{u.Id}",
-                AvatarUrl = "https://via.placeholder.com/150"
+                AvatarUrl = u.ProfileImagePath ??
+                      $"https://api.dicebear.com/9.x/initials/svg?seed={Uri.EscapeDataString(u.FullName)}"
             }).ToList();
         }
 
@@ -73,8 +74,7 @@ namespace Projekt.Web.Controllers
                     ? projectEntity.Description.Substring(0, 500) + "..."
                     : projectEntity.Description,
                 PublishedAt = DateTime.Now, 
-                DetailUrl = Url.Action("Details", "Projects", new { id = projectEntity.Id }) ?? $"/Projects/Details/{projectEntity.Id}",
-                ImageUrl = "https://via.placeholder.com/800x400?text=" + Uri.EscapeDataString(projectEntity.Title)
+
             };
         }
 

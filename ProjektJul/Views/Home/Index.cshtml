@@ -56,10 +56,10 @@
     {
         <div class="card border-0 shadow-sm">
             <div class="card-body">
-                <div class="text-muted mb-2">Publicerat @project.PublishedAt.ToString("d MMM yyyy")</div>
+                <div class="text-muted mb-2">Publicerat @project.PublishedAt.ToString("yyyy-MM-dd")</div>
                 <h3 class="card-title">@project.Title</h3>
                 <p class="card-text text-muted">@project.Summary</p>
-                <a class="btn btn-dark" href="@project.DetailUrl">Till projektet</a>
+                <a class="btn btn-dark" asp-controller="Projects" asp-action="Index">Se alla projekt</a>
             </div>
         </div>
     }

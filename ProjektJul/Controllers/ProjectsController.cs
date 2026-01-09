@@ -1,11 +1,10 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Projekt.Data.Identity;
 using Projekt.Data.Persistence;
 using Projekt.Web.ViewModels;
-
+using Microsoft.AspNetCore.Mvc.Rendering;
 namespace Projekt.Web.Controllers
 {
     public class ProjectsController : Controller
@@ -26,23 +25,20 @@ namespace Projekt.Web.Controllers
 
             var projects = await _db.Projekts
                 .Include(p => p.User)
+                .Include(p => p.Collaborators)
                 .OrderByDescending(p => p.Id)
                 .ToListAsync();
-
-            if (!isAuthenticated)
-            {
-                projects = projects
-                    .Where(p => p.User is not null && !p.User.IsPrivate)
-                    .ToList();
-            }
 
             var vm = projects.Select(p => new ProjectListItemViewModel
             {
                 Id = p.Id,
                 Title = p.Title,
                 Description = p.Description,
-                OwnerName = p.User?.FullName ?? "Okänd",
-                OwnerIsPrivate = p.User?.IsPrivate ?? false
+                OwnerIsPrivate = p.User?.IsPrivate ?? false,
+                OwnerId = p.UserId,
+                PublishedAt = p.PublishedAt,
+                OwnerName = (!isAuthenticated && (p.User?.IsPrivate == true)) ? "Privat" : p.User?.FullName ?? "Okänd",
+                CollaboratorNames = p.Collaborators.Select(c => (!isAuthenticated && (c.IsPrivate)) ? "Privat" : c.FullName).ToList()
             }).ToList();
 
             return View(vm);
@@ -50,9 +46,18 @@ namespace Projekt.Web.Controllers
 
         
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View(new ProjectFormViewModel());
+            //Hämta alla användare till listan för medarbetare
+            var model = new ProjectFormViewModel();
+            model.AvailableUsers = await _db.Users
+                .Select(u => new SelectListItem
+                {
+                    Value = u.Id,
+                    Text = u.FullName
+                })
+                .ToListAsync();
+            return View(model);
         }
 
         
@@ -77,8 +82,19 @@ namespace Projekt.Web.Controllers
             {
                 Title = model.Title,
                 Description = model.Description,
-                UserId = userId
+                UserId = userId,
+                PublishedAt = DateTime.UtcNow
             };
+
+            //Koppla de medarbetarna man valt från listn till projekt.
+            if (model.SelectedCollaboratorIds.Any())
+            {
+                var collaborators = await _db.Users
+                    .Where(u => model.SelectedCollaboratorIds.Contains(u.Id))
+                    .ToListAsync();
+                
+                project.Collaborators = collaborators;
+            }
 
             _db.Projekts.Add(project);
             await _db.SaveChangesAsync();

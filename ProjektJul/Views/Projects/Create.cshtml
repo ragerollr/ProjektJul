@@ -17,6 +17,11 @@
             <textarea asp-for="Description" class="form-control" rows="4"></textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
+        <div class="mb-3">
+            <label class="form-label">Lägg till medarbetare (Håll in CTRL för att välja flera)</label>
+            <select asp-for="SelectedCollaboratorIds" asp-items="Model.AvailableUsers" class="form-select" multiple style="height: 150px;">
+            </select>
+        </div>
         <button type="submit" class="btn btn-primary">Spara</button>
         <a asp-action="Index" class="btn btn-link">Avbryt</a>
     </form>

@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
+
 namespace Projekt.Web.ViewModels
 {
     public class ProjectFormViewModel
@@ -9,6 +11,8 @@ namespace Projekt.Web.ViewModels
 
         [System.ComponentModel.DataAnnotations.StringLength(1000)]
         public string Description { get; set; } = string.Empty;
+        public List<string> SelectedCollaboratorIds { get; set; } = new List<string>();
+        public List<SelectListItem> AvailableUsers { get; set; } = new List<SelectListItem>();
     }
 
     public class ProjectListItemViewModel
@@ -16,7 +20,10 @@ namespace Projekt.Web.ViewModels
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        public DateTime PublishedAt { get; set; }
         public string OwnerName { get; set; } = string.Empty;
         public bool OwnerIsPrivate { get; set; }
+        public string OwnerId { get; set; } = string.Empty;
+        public List<string> CollaboratorNames { get; set; } = new List<string>();
     }
 }

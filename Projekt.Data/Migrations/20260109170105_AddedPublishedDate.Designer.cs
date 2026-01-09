@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Projekt.Data.Persistence;
 
@@ -11,9 +12,11 @@ using Projekt.Data.Persistence;
 namespace Projekt.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260109170105_AddedPublishedDate")]
+    partial class AddedPublishedDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +24,6 @@ namespace Projekt.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("ApplicationUserProjects", b =>
-                {
-                    b.Property<int>("CollaboratingProjectsId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CollaboratorsId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("CollaboratingProjectsId", "CollaboratorsId");
-
-                    b.HasIndex("CollaboratorsId");
-
-                    b.ToTable("ProjectCollaborators", (string)null);
-                });
 
             modelBuilder.Entity("CVSite.Data.Models.Erfarenhet", b =>
                 {
@@ -414,21 +402,6 @@ namespace Projekt.Data.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("ApplicationUserProjects", b =>
-                {
-                    b.HasOne("CVSite.Data.Models.Projects", null)
-                        .WithMany()
-                        .HasForeignKey("CollaboratingProjectsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Projekt.Data.Identity.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("CollaboratorsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("CVSite.Data.Models.Erfarenhet", b =>
                 {
                     b.HasOne("Projekt.Data.Identity.ApplicationUser", "User")
@@ -441,9 +414,9 @@ namespace Projekt.Data.Migrations
             modelBuilder.Entity("CVSite.Data.Models.Projects", b =>
                 {
                     b.HasOne("Projekt.Data.Identity.ApplicationUser", "User")
-                        .WithMany("OwnedProjects")
+                        .WithMany("Projects")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -541,7 +514,7 @@ namespace Projekt.Data.Migrations
                 {
                     b.Navigation("Erfarenheter");
 
-                    b.Navigation("OwnedProjects");
+                    b.Navigation("Projects");
 
                     b.Navigation("Skills");
 
