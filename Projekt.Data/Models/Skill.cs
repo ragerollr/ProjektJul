@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 using Projekt.Data.Identity;
+
+
 namespace CVSite.Data.Models
 {
     public class Skill
@@ -13,7 +16,9 @@ namespace CVSite.Data.Models
         public string Name { get; set; } = string.Empty; //Namn på skillen t.ex C#, Java, Projektledning etc.
         [Range(1, 5)]
         public int Level { get; set; } // Hur bra man är på en skala 1-5
-        public string UserId { get; set; } = "";
+        public string UserId { get; set; } = null!;
+
+        
         public ApplicationUser? User { get; set; }
     }
 }

@@ -12,11 +12,16 @@
 
 <h1>@Model.FullName</h1>
 
-<img src="@Model.ProfileImageUrl" width="150" />
+<img src="@Model.ProfileImageUrl"
+     class="rounded-circle mb-3"
+     width="150" />
 
-<p><strong>Email:</strong> @Model.Email</p>
-<p><strong>Address:</strong> @Model.Address</p>
-<p><strong>Status:</strong> @(Model.IsPublic ? "Public" : "Private")</p>
+<div class="card p-3 mb-4">
+    
+    <p><strong>Email:</strong> @Model.Email</p>
+    <p><strong>Address:</strong> @Model.Address</p>
+    <p><strong>Status:</strong> @(Model.IsPublic ? "Public" : "Private")</p>
+</div>
 
 <h3>Utbildning</h3>
 

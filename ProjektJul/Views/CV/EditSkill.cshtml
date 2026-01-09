@@ -1,0 +1,32 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model CVSite.Data.Models.Skill
+
+<form asp-controller="Cv"
+      asp-action="EditSkill"
+      method="post">
+
+    @Html.AntiForgeryToken()
+
+    <!-- Behövs för att veta VILKEN skill -->
+    <input type="hidden" asp-for="Id" />
+
+    <div>
+        <label asp-for="Name"></label>
+        <input asp-for="Name" />
+        <span asp-validation-for="Name"></span>
+    </div>
+
+    <div>
+        <label asp-for="Level"></label>
+        <input asp-for="Level" type="number" min="1" max="5" />
+        <span asp-validation-for="Level"></span>
+    </div>
+
+    <button type="submit">Spara</button>
+</form>
+
+
