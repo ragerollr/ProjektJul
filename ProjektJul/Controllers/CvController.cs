@@ -57,7 +57,7 @@ namespace Projekt.Web.Controllers
                 Utbildningar = await _db.Utbildningar.Where(u => u.UserId == myId).ToListAsync(),
                 Erfarenheter = await _db.Erfarenheter.Where(e => e.UserId == myId).ToListAsync(),
 
-                Projects = new() { "CV-portal", "API-projekt" } // koppla senare
+                Projects = new() { "CV-portal", "API-projekt" } 
             };
 
             return View("~/Views/CV/MyProfile.cshtml", vm);

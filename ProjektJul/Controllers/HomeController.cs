@@ -72,23 +72,19 @@ namespace Projekt.Web.Controllers
                 Summary = projectEntity.Description.Length > 500
                     ? projectEntity.Description.Substring(0, 500) + "..."
                     : projectEntity.Description,
-                PublishedAt = DateTime.Now, // Eller ditt CreatedDate om du fixade det
+                PublishedAt = DateTime.Now, 
                 DetailUrl = Url.Action("Details", "Projects", new { id = projectEntity.Id }) ?? $"/Projects/Details/{projectEntity.Id}",
                 ImageUrl = "https://via.placeholder.com/800x400?text=" + Uri.EscapeDataString(projectEntity.Title)
             };
         }
 
-        // Viktigt: om något fortfarande pekar på /Home/MyProfile, skicka vidare rätt.
+        
         public IActionResult MyProfile()
         {
             return RedirectToAction("MyProfile", "Cv");
         }
 
-        // Dessa behövs inte längre om du kör AccountController + MessagesController,
-        // men kan ligga kvar om ni inte vill städa nu.
-        public IActionResult Inbox() => RedirectToAction("Inbox", "Messages");
-        public IActionResult Login() => RedirectToAction("Login", "Account");
-        public IActionResult Register() => RedirectToAction("Register", "Account");
+       
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

@@ -32,7 +32,7 @@ namespace Projekt.Web.Controllers
 
             var isLoggedIn = User.Identity?.IsAuthenticated ?? false;
 
-            // Grundquery: matcha på FullName (och fallback: Email om FullName saknas)
+            //  matcha på FullName (och fallback: Email om FullName saknas)
             var usersQuery = _db.Users.AsQueryable();
 
             // KRAV: anonym sökning får bara se offentliga profiler
@@ -41,7 +41,7 @@ namespace Projekt.Web.Controllers
                 usersQuery = usersQuery.Where(u => !u.IsPrivate);
             }
 
-            // Söklogik (case-insensitive via ToLower; funkar bra för kursnivå)
+           
             query = query.ToLower();
 
             var results = await usersQuery

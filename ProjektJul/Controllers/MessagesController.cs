@@ -113,7 +113,7 @@ namespace Projekt.Web.Controllers
             var msg = await _db.Messages.FirstOrDefaultAsync(m => m.Id == id);
             if (msg == null) return NotFound();
 
-            // Uni-nivå: säkerställ att användaren bara kan markera sina egna meddelanden
+            // säkerställ att användaren bara kan markera sina egna meddelanden
             if (msg.ToUserId != myId) return Forbid();
 
             if (!msg.IsRead)
