@@ -129,12 +129,13 @@
     <hr />
 
     <h3>Projects</h3>
+    <p>Kryssa i projekt du vill delta i</p>
 
     @for (int i = 0; i < Model.Projects.Count; i++)
     {
         <div>
             <input asp-for="Projects[i].IsSelected" />
-            <label>@Model.Projects[i].Title</label>
+            <label asp-for="Projects[i].IsSelected">@Model.Projects[i].Title</label>
 
             <input type="hidden" asp-for="Projects[i].ProjectId" />
             <input type="hidden" asp-for="Projects[i].Title" />

@@ -30,7 +30,7 @@ namespace Projekt.Web.ViewModels
 
         public IFormFile? ProfileImage { get; set; }
 
-        public List<ProjectCheckboxViewModel> Projects { get; set; } = new();
+        public List<ProjectCheckBoxViewModel> Projects { get; set; } = new();
 
         public List<Utbildning> Utbildningar { get; set; } = new();
         public List<Erfarenhet> Erfarenheter { get; set; } = new();

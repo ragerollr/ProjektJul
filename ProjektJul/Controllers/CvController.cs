@@ -56,8 +56,9 @@ namespace Projekt.Web.Controllers
                 Skills = await _db.Skills.Where(s => s.UserId == myId).ToListAsync(),
                 Utbildningar = await _db.Utbildningar.Where(u => u.UserId == myId).ToListAsync(),
                 Erfarenheter = await _db.Erfarenheter.Where(e => e.UserId == myId).ToListAsync(),
-
-                Projects = new() { "CV-portal", "API-projekt" } 
+                Projects = await _db.Projekts.Where(p => p.Collaborators.Any(c => c.Id == user.Id))
+                .Select(p => p.Title)
+                .ToListAsync()
             };
 
             return View("~/Views/CV/MyProfile.cshtml", vm);
@@ -89,7 +90,7 @@ namespace Projekt.Web.Controllers
                 UserId = user.Id,
                 FullName = user.FullName ?? user.Email ?? "Okänd",
                 Email = user.Email ?? "",
-                Address = "",
+                Address = user.Address ?? "",
                 IsPublic = !user.IsPrivate,
                 ProfileImageUrl = string.IsNullOrEmpty(user.ProfileImagePath)
                 ? "/images/default-profile.png"
@@ -99,8 +100,9 @@ namespace Projekt.Web.Controllers
                 Skills = await _db.Skills.Where(s => s.UserId == id).ToListAsync(),
                 Utbildningar = await _db.Utbildningar.Where(u => u.UserId == id).ToListAsync(),
                 Erfarenheter = await _db.Erfarenheter.Where(e => e.UserId == id).ToListAsync(),
-
-                Projects = new() { "CV-portal", "API-projekt" }
+                Projects = await _db.Projekts.Where(p => p.Collaborators.Any(c => c.Id == user.Id))
+                .Select(p => p.Title)
+                .ToListAsync()
             };
 
             return View("~/Views/CV/MyProfile.cshtml", vm);
@@ -117,7 +119,7 @@ namespace Projekt.Web.Controllers
             if (string.IsNullOrWhiteSpace(myId))
                 return RedirectToAction("Login", "Account");
 
-            var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == myId);
+            var user = await _db.Users.Include(u => u.CollaboratingProjects).FirstOrDefaultAsync(u => u.Id == myId);
             if (user == null)
                 return RedirectToAction("Login", "Account");
 
@@ -132,8 +134,23 @@ namespace Projekt.Web.Controllers
                 Skills = await _db.Skills.Where(s => s.UserId == myId).ToListAsync(),
                 Utbildningar = await _db.Utbildningar.Where(u => u.UserId == myId).ToListAsync(),
                 Erfarenheter = await _db.Erfarenheter.Where(e => e.UserId == myId).ToListAsync(),
-                Projects = new()
             };
+
+            //Hämta alla projekt för en lista med checkboxar, hämtar sedan ut de man tidigare kryssat i för att veta vad som ska vara ikryssat.
+            var allProjects = await _db.Projekts.ToListAsync();
+            var collabProjects = user.CollaboratingProjects.Select(p => p.Id).ToList();
+
+            vm.Projects = new List<ProjectCheckBoxViewModel>();
+
+            foreach (var project in allProjects)
+            {
+                vm.Projects.Add(new ProjectCheckBoxViewModel
+                {
+                    ProjectId = project.Id,
+                    Title = project.Title,
+                    IsSelected = collabProjects.Contains(project.Id)
+                });
+            }
 
             return View(vm);
         }
@@ -157,7 +174,7 @@ namespace Projekt.Web.Controllers
                 return View(model);
             }
 
-            var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == myId);
+            var user = await _db.Users.Include(u => u.CollaboratingProjects).FirstOrDefaultAsync(u => u.Id == myId);
             if (user == null)
                 return RedirectToAction("Login", "Account");
 
@@ -196,6 +213,18 @@ namespace Projekt.Web.Controllers
                 await model.ProfileImage.CopyToAsync(stream);
 
                 user.ProfileImagePath = "/images/profiles/" + fileName;
+            }
+
+            //Gå med i valda projekt//
+            //Hämtar först ut id på valda projekt från vyn, sedan hämtar projekten från databasen via dessa id.
+            var selectedProjects = model.Projects.Where(p => p.IsSelected).Select(p => p.ProjectId).ToList();
+            var projectsToJoin = await _db.Projekts.Where(p => selectedProjects.Contains(p.Id)).ToListAsync();
+
+            user.CollaboratingProjects.Clear();//Tar bort alla tidigare projekt användaren var med i för att undvika dupliceringar.
+
+            foreach (var project in projectsToJoin)
+            {
+                user.CollaboratingProjects.Add(project);
             }
 
 
