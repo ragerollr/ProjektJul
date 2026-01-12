@@ -106,7 +106,7 @@ namespace Projekt.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var project = await _db.Projekts.FirstOrDefaultAsync(p => p.Id == id);
+            var project = await _db.Projekts.Include(p => p.Collaborators).FirstOrDefaultAsync(p => p.Id == id);
             if (project == null)
             {
                 return NotFound();
@@ -122,8 +122,16 @@ namespace Projekt.Web.Controllers
             {
                 Id = project.Id,
                 Title = project.Title,
-                Description = project.Description
+                Description = project.Description,
+                SelectedCollaboratorIds = project.Collaborators.Select(c => c.Id).ToList(),
             };
+            vm.AvailableUsers = await _db.Users
+                .Select(u => new SelectListItem
+                {
+                    Value = u.Id,
+                    Text = u.FullName
+                })
+                .ToListAsync();
 
             return View(vm);
         }
@@ -138,7 +146,7 @@ namespace Projekt.Web.Controllers
                 return View(model);
             }
 
-            var project = await _db.Projekts.FirstOrDefaultAsync(p => p.Id == model.Id);
+            var project = await _db.Projekts.Include(p => p.Collaborators).FirstOrDefaultAsync(p => p.Id == model.Id);
             if (project == null)
             {
                 return NotFound();
@@ -152,6 +160,13 @@ namespace Projekt.Web.Controllers
 
             project.Title = model.Title;
             project.Description = model.Description;
+
+            //Uppdatera medarbetare
+            var selectedCollaborators = await _db.Users
+                .Where(u => model.SelectedCollaboratorIds.Contains(u.Id))
+                .ToListAsync();
+            project.Collaborators = selectedCollaborators;
+
 
             await _db.SaveChangesAsync();
 
