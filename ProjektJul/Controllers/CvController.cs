@@ -49,7 +49,7 @@ namespace Projekt.Web.Controllers
                 
                 // PROFILBILD
                 ProfileImageUrl = string.IsNullOrEmpty(user.ProfileImagePath)
-                ? "/images/default-profile.png"
+                ? "/images/default-profile.png.jpg"
     :           user.ProfileImagePath,
 
 
@@ -93,7 +93,7 @@ namespace Projekt.Web.Controllers
                 Address = user.Address ?? "",
                 IsPublic = !user.IsPrivate,
                 ProfileImageUrl = string.IsNullOrEmpty(user.ProfileImagePath)
-                ? "/images/default-profile.png"
+                ? "/images/default-profile.png.jpg"
                : user.ProfileImagePath,
 
 
@@ -398,6 +398,51 @@ namespace Projekt.Web.Controllers
             if (erfarenhet.UserId != myId) return Forbid();
 
             _db.Erfarenheter.Remove(erfarenhet);
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Edit));
+        }
+
+
+        // =========================
+        // Delete skill
+        // =========================
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> DeleteSkillConfirm(int id)
+        {
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(myId))
+                return RedirectToAction("Login", "Account");
+
+            var skill = await _db.Skills.FirstOrDefaultAsync(s => s.Id == id);
+            if (skill == null)
+                return NotFound();
+
+            if (skill.UserId != myId)
+                return Forbid();
+
+            return View(skill);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteSkillConfirmed(int id)
+        {
+            var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(myId))
+                return RedirectToAction("Login", "Account");
+
+            var skill = await _db.Skills.FirstOrDefaultAsync(s => s.Id == id);
+            if (skill == null)
+                return NotFound();
+
+            if (skill.UserId != myId)
+                return Forbid();
+
+            _db.Skills.Remove(skill);
             await _db.SaveChangesAsync();
 
             return RedirectToAction(nameof(Edit));

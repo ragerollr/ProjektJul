@@ -1,84 +1,118 @@
 ﻿@model Projekt.Web.ViewModels.CvViewModel
 
+<div class="container">
 
+<div class="text-center mb-4">
+    <img src="@Model.ProfileImageUrl"
+         class="rounded-circle mb-2"
+         width="150" />
 
-<h1>@Model.FullName</h1>
-
-<img src="@Model.ProfileImageUrl"
-     class="rounded-circle mb-3"
-     width="150" />
-
-<div class="card p-3 mb-4">
-    
-    <p><strong>Email:</strong> @Model.Email</p>
-    <p><strong>Address:</strong> @Model.Address</p>
-    <p><strong>Status:</strong> @(Model.IsPublic ? "Public" : "Private")</p>
+    <h1 class="mb-0">@Model.FullName</h1>
 </div>
 
-<h3>Utbildning</h3>
 
-@if (Model.Utbildningar != null && Model.Utbildningar.Any())
-{
-    <ul>
-        @foreach (var utbildning in Model.Utbildningar)
-        {
+
+    <div class="card p-3 mb-4">
+        <ul class="list-unstyled mb-0">
             <li>
-                <strong>@utbildning.SchoolName</strong><br />
-                @utbildning.Degree <br />
-                @utbildning.StartDate.Year –
-                @(utbildning.EndDate?.Year.ToString() ?? "Pågående")
+                <strong>Email:</strong> @Model.Email
             </li>
-        }
-    </ul>
-}
-else
-{
-    <p>Ingen utbildning tillagd ännu.</p>
-}
-
-<h3>Erfarenhet</h3>
-
-@if (Model.Erfarenheter != null && Model.Erfarenheter.Any())
-{
-    <ul>
-        @foreach (var e in Model.Erfarenheter)
-        {
             <li>
-                <strong>@e.Position</strong> – @e.CompanyName <br />
-                @e.StartDate.ToString("yyyy-MM")
-                –
-                @(e.EndDate.HasValue ? e.EndDate.Value.ToString("yyyy-MM") : "Pågående")
+                <strong>Adress:</strong> @Model.Address
+            </li>
+            <li>
+                <strong>Status:</strong>
+                <span class="badge @(Model.IsPublic ? "bg-success" : "bg-secondary")">
+                    @(Model.IsPublic ? "Public profil" : "Privat profil")
+                </span>
+            </li>
+        </ul>
+    </div>
 
-                @if (!string.IsNullOrEmpty(e.Description))
+
+    <div class="card p-3 mb-4">
+        <h3 class="mb-3">Utbildning</h3>
+
+        @if (Model.Utbildningar != null && Model.Utbildningar.Any())
+        {
+            <ul class="list-unstyled mb-0">
+                @foreach (var utbildning in Model.Utbildningar)
                 {
-                    <div>@e.Description</div>
+                    <li class="mb-3">
+                        <strong>@utbildning.SchoolName</strong><br />
+                        <span class="text-muted">
+                            @utbildning.Degree<br />
+                            @utbildning.StartDate.Year –
+                            @(utbildning.EndDate?.Year.ToString() ?? "Pågående")
+                        </span>
+                    </li>
                 }
-            </li>
+            </ul>
         }
-    </ul>
-}
-else
-{
-    <p>Inga erfarenheter tillagda än.</p>
-}
-
-<h3>Kompetenser</h3>
-
-@if (Model.Skills != null && Model.Skills.Any())
-{
-    <ul>
-        @foreach (var s in Model.Skills)
+        else
         {
-            <li>
-                <strong>@s.Name</strong> – nivå @s.Level / 5
-            </li>
+            <p class="mb-0">Ingen utbildning tillagd ännu.</p>
         }
-    </ul>
-}
-else
-{
-    <p>Inga kompetenser tillagda.</p>
-}
+    </div>
+
+    <div class="card p-3 mb-4">
+        <h3 class="mb-3">Erfarenhet</h3>
+
+        @if (Model.Erfarenheter != null && Model.Erfarenheter.Any())
+        {
+            <ul class="list-unstyled mb-0">
+                @foreach (var e in Model.Erfarenheter)
+                {
+                    <li class="mb-3">
+                        <strong>@e.Position</strong> – @e.CompanyName<br />
+
+                        <span class="text-muted">
+                            @e.StartDate.ToString("yyyy-MM") –
+                            @(e.EndDate.HasValue
+                                                ? e.EndDate.Value.ToString("yyyy-MM")
+                                                : "Pågående")
+                </span>
+
+                @if (!string.IsNullOrWhiteSpace(e.Description))
+                        {
+                            <div class="mt-1">
+                                @e.Description
+                            </div>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="mb-0">Inga erfarenheter tillagda än.</p>
+        }
+    </div>
+
+    <div class="card p-3 mb-4">
+        <h3 class="mb-3">Kompetenser</h3>
+
+        @if (Model.Skills != null && Model.Skills.Any())
+        {
+            <ul class="list-unstyled mb-0">
+                @foreach (var s in Model.Skills)
+                {
+                    <li class="mb-2 d-flex justify-content-between align-items-center">
+                        <strong>@s.Name</strong>
+
+                        <span class="badge bg-primary">
+                            Nivå @s.Level / 5
+                        </span>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="mb-0">Inga kompetenser tillagda.</p>
+        }
+    </div>
+
 
 <h3>Projekt</h3>
 @if (Model.Projects != null && Model.Projects.Any())
@@ -138,3 +172,4 @@ else
 
     <button type="submit" class="btn btn-primary">Skicka</button>
 </form>
+</div>

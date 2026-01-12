@@ -1,0 +1,26 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model CVSite.Data.Models.Skill
+
+<h2>Ta bort kompetens</h2>
+
+<p>
+    Är du säker på att du vill ta bort
+    <strong>@Model.Name</strong>?
+</p>
+
+<form asp-action="DeleteSkillConfirmed" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.Id" />
+
+    <button type="submit" class="btn btn-danger">
+        Ja, ta bort
+    </button>
+
+    <a asp-action="Edit" class="btn btn-secondary">
+        Avbryt
+    </a>
+</form>

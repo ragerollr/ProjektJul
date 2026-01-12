@@ -67,7 +67,8 @@
             |
 
             <a asp-action="DeleteUtbildningConfirm"
-               asp-route-id="@u.Id">
+               asp-route-id="@u.Id"
+                class="text-danger">
                 Ta bort
             </a>
         </div>
@@ -92,7 +93,8 @@
             |
 
             <a asp-action="DeleteErfarenhetConfirm"
-               asp-route-id="@e.Id">
+               asp-route-id="@e.Id"
+                class="text-danger">
                 Ta bort
             </a>
 
@@ -117,6 +119,15 @@
                     asp-route-id="@s.Id">
                     Redigera
                     </a>
+
+                    |
+
+                    <a asp-action="DeleteSkillConfirm"
+                       asp-route-id="@s.Id"
+                       class="text-danger">
+                        Ta bort
+                    </a>
+
                 </li>
             }
         </ul>
