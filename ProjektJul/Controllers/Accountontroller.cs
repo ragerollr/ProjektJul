@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Projekt.Data.Identity;
 using Projekt.Web.ViewModels;
@@ -85,5 +86,49 @@ namespace Projekt.Web.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+
+        //Ändra lösenord
+        [Authorize]
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View(new ChangePasswordVm());
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordVm vm)
+        {
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return RedirectToAction("Login");
+
+            var result = await _userManager.ChangePasswordAsync(
+                user,
+                vm.CurrentPassword,
+                vm.NewPassword
+            );
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError(string.Empty, error.Description);
+
+                return View(vm);
+            }
+
+            // Viktigt: uppdatera login-session
+            await _signInManager.RefreshSignInAsync(user);
+
+            TempData["MessageSuccess"] = "Lösenordet har ändrats.";
+            return RedirectToAction("Index", "Home");
+        }
+
+
     }
 }

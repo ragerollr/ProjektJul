@@ -1,14 +1,6 @@
 ﻿@model Projekt.Web.ViewModels.CvViewModel
 
-<div class="mb-3">
-    @* Edit ska bara vara för inloggade (annars kan vem som helst försöka edit:a) *@
-    @if (User.Identity?.IsAuthenticated ?? false)
-    {
-        <a asp-action="Edit" class="btn btn-primary">
-            Edit profile
-        </a>
-    }
-</div>
+
 
 <h1>@Model.FullName</h1>
 
@@ -132,6 +124,16 @@ else
     <div class="mb-3">
         <label class="form-label">Meddelande</label>
         <textarea class="form-control" name="Body" rows="4"></textarea>
+    </div>
+
+    <div class="mb-3">
+        @* Edit ska bara vara för inloggade (annars kan vem som helst försöka edit:a) *@
+        @if (User.Identity?.IsAuthenticated ?? false)
+        {
+            <a asp-action="Edit" class="btn btn-primary">
+                Edit profile
+            </a>
+        }
     </div>
 
     <button type="submit" class="btn btn-primary">Skicka</button>
