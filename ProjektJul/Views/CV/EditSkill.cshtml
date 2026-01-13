@@ -15,13 +15,13 @@
     <input type="hidden" asp-for="Id" />
 
     <div>
-        <label asp-for="Name"></label>
+        <label asp-for="Name">Namn</label>
         <input asp-for="Name" />
         <span asp-validation-for="Name"></span>
     </div>
 
     <div>
-        <label asp-for="Level"></label>
+        <label asp-for="Level">Kompetensnivå</label>
         <input asp-for="Level" type="number" min="1" max="5" />
         <span asp-validation-for="Level"></span>
     </div>

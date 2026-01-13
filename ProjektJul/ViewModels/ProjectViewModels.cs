@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Projekt.Web.ViewModels
 {
-    public class ProjectFormViewModel
+    public class ProjectFormViewModel //Viewmodel för att skapa och redigera projekt. 
     {
         public int Id { get; set; }
         [System.ComponentModel.DataAnnotations.Required]
@@ -15,7 +15,7 @@ namespace Projekt.Web.ViewModels
         public List<SelectListItem> AvailableUsers { get; set; } = new List<SelectListItem>();
     }
 
-    public class ProjectListItemViewModel
+    public class ProjectListItemViewModel //Viewmodel som visar projekten i listan. 
     {
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
