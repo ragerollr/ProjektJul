@@ -25,7 +25,7 @@ builder.Services
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-// Cookie redirect (UNI-NIVÅ)
+
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
@@ -45,7 +45,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication();   // 🔑 KRITISK
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

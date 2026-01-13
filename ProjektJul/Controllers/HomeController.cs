@@ -50,8 +50,8 @@ namespace Projekt.Web.Controllers
                     ? string.Join(", ", u.Skills.Select(s => s.Name))
                     : "Inga färdigheter angivna",
                 ProfileUrl = Url.Action("Details", "Cv", new { id = u.Id }) ?? $"/Cv/Details/{u.Id}",
-                AvatarUrl = u.ProfileImagePath ??
-                      $"https://api.dicebear.com/9.x/initials/svg?seed={Uri.EscapeDataString(u.FullName)}"
+                AvatarUrl = string.IsNullOrEmpty(u.ProfileImagePath)
+                ? "/images/default-profile.png.jpg": u.ProfileImagePath,
             }).ToList();
         }
 

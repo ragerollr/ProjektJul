@@ -126,7 +126,7 @@ namespace Projekt.Web.Controllers
             await _signInManager.RefreshSignInAsync(user);
 
             TempData["MessageSuccess"] = "Lösenordet har ändrats.";
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("MyProfile", "Cv");
         }
 
 
