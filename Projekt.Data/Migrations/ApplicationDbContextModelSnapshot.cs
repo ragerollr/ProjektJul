@@ -373,62 +373,6 @@ namespace Projekt.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "test-user-1",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "1a8ed0c5-d624-405f-8c58-b05442b87098",
-                            Email = "user1@test.se",
-                            EmailConfirmed = true,
-                            FullName = "Test User One",
-                            IsPrivate = false,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "USER1@TEST.SE",
-                            NormalizedUserName = "USER1@TEST.SE",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGT6IfH1vyij10AOcxm69+WqvB9yDv0K9u/Lsdw0068JKrkbmycW6kAA9fw1KzQo/A==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "c7077cc7-cf7e-4cb7-8cfc-45af010b79ca",
-                            TwoFactorEnabled = false,
-                            UserName = "user1@test.se"
-                        },
-                        new
-                        {
-                            Id = "test-user-2",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "36cc494d-fb83-4b06-8214-fb2b0d14bc38",
-                            Email = "user2@test.se",
-                            EmailConfirmed = true,
-                            FullName = "Test User Two",
-                            IsPrivate = false,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "USER2@TEST.SE",
-                            NormalizedUserName = "USER2@TEST.SE",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDB5iQh2hNXd3FwtqoTS2PmI5WN1h9f3kL4/EwpScSSsBIXRRuCoRnvG0pLGdi2uxw==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "f1445eee-3453-4a71-bd39-519e2615bc09",
-                            TwoFactorEnabled = false,
-                            UserName = "user2@test.se"
-                        },
-                        new
-                        {
-                            Id = "test-user-3",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "ef75e6bc-7e5f-411f-840c-2df1e2266f01",
-                            Email = "user3@test.se",
-                            EmailConfirmed = true,
-                            FullName = "Test User Three",
-                            IsPrivate = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "USER3@TEST.SE",
-                            NormalizedUserName = "USER3@TEST.SE",
-                            PasswordHash = "AQAAAAIAAYagAAAAEC8nyD7wnUv1b236Frlx0E8f+KXganOg95AU8qpCy4mRdUZTnCA7oe0z9rzmjufyxg==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "d1d75146-fcde-4552-96ff-b22f0d18bf18",
-                            TwoFactorEnabled = false,
-                            UserName = "user3@test.se"
-                        });
                 });
 
             modelBuilder.Entity("Projekt.Data.Models.Message", b =>

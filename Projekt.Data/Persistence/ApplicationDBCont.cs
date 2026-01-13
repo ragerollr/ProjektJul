@@ -1,5 +1,4 @@
 ﻿using CVSite.Data.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Projekt.Data.Identity;
@@ -25,9 +24,6 @@ namespace Projekt.Data.Persistence
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
-
-
 
             //En användare har flera projekt, ett projekt har en ägare
             builder.Entity<Projects>()
