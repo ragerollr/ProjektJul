@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Projekt.Data.Identity;
 using Projekt.Data.Persistence;
+using Projekt.Data.Models;
 using Projekt.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
 namespace Projekt.Web.Controllers
@@ -78,7 +79,7 @@ namespace Projekt.Web.Controllers
                 //return Forbid();
             }
 
-            var project = new CVSite.Data.Models.Projects
+            var project = new Projects
             {
                 Title = model.Title,
                 Description = model.Description,

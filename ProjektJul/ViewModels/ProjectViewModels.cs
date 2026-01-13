@@ -1,15 +1,16 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace Projekt.Web.ViewModels
 {
     public class ProjectFormViewModel //Viewmodel för att skapa och redigera projekt. 
     {
         public int Id { get; set; }
-        [System.ComponentModel.DataAnnotations.Required]
-        [System.ComponentModel.DataAnnotations.StringLength(100)]
+        [Required]
+        [StringLength(100)]
         public string Title { get; set; } = string.Empty;
 
-        [System.ComponentModel.DataAnnotations.StringLength(1000)]
+        [StringLength(1000)]
         public string Description { get; set; } = string.Empty;
         public List<string> SelectedCollaboratorIds { get; set; } = new List<string>();
         public List<SelectListItem> AvailableUsers { get; set; } = new List<SelectListItem>();

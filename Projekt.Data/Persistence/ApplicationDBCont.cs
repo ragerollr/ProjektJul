@@ -1,4 +1,4 @@
-﻿using CVSite.Data.Models;
+﻿using Projekt.Data.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Projekt.Data.Identity;

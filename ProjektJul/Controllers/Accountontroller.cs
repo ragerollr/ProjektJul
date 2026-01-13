@@ -144,7 +144,6 @@ namespace Projekt.Web.Controllers
                 return View(vm);
             }
 
-            // Viktigt: uppdatera login-session
             await _signInManager.RefreshSignInAsync(user);
 
             TempData["MessageSuccess"] = "Lösenordet har ändrats.";

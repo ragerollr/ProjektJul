@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
 
 using Projekt.Data.Identity;
 
 
-namespace CVSite.Data.Models
+namespace Projekt.Data.Models
 {
     public class Skill
     {

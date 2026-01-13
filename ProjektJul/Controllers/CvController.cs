@@ -1,11 +1,9 @@
-using CVSite.Data.Models;
+using Projekt.Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Projekt.Data.Models;
 using Projekt.Data.Persistence;
 using Projekt.Web.ViewModels;
-using System.Net;
 using System.Security.Claims;
 
 namespace Projekt.Web.Controllers
@@ -166,7 +164,6 @@ namespace Projekt.Web.Controllers
 
             if (!ModelState.IsValid)
             {
-                // ladda om listor så Edit-vyn inte går sönder
                 model.Skills = await _db.Skills.Where(s => s.UserId == myId).ToListAsync();
                 model.Utbildningar = await _db.Utbildningar.Where(u => u.UserId == myId).ToListAsync();
                 model.Erfarenheter = await _db.Erfarenheter.Where(e => e.UserId == myId).ToListAsync();
@@ -182,7 +179,7 @@ namespace Projekt.Web.Controllers
             user.FullName = $"{model.FirstName} {model.LastName}".Trim();
             user.Address = model.Address;
             user.Email = model.Email;
-            user.UserName = model.Email; // om email används som login
+            user.UserName = model.Email; 
             user.IsPrivate = !model.IsPublic;
 
             // PROFILBILD
@@ -215,8 +212,8 @@ namespace Projekt.Web.Controllers
                 user.ProfileImagePath = "/images/profiles/" + fileName;
             }
 
-            //Gå med i valda projekt//
-            //Hämtar först ut id på valda projekt från vyn, sedan hämtar projekten från databasen via dessa id.
+            //Gå med i valda projekt
+            //Hämtar först ut id på valda projekt från vyn, sedan hämtas projekten från databasen via dessa id.
             var selectedProjects = model.Projects.Where(p => p.IsSelected).Select(p => p.ProjectId).ToList();
             var projectsToJoin = await _db.Projekts.Where(p => selectedProjects.Contains(p.Id)).ToListAsync();
 

@@ -41,7 +41,7 @@ namespace Projekt.Web.Controllers
                 .Take(6)
                 .ToListAsync();
 
-            // Mappa till CvModel
+            // Mappa till CvModel för att få fram infon i korten på förstasidan.
             return users.Select(u => new CvModel
             {
                 FullName = u.FullName ?? "Okänd",
@@ -65,7 +65,7 @@ namespace Projekt.Web.Controllers
 
             if (projectEntity == null) return null;
 
-            // Mappa till ProjektModel
+            // Mappa till ProjektModel för att få fram infon i projektkortet på förstasidan.
             return new ProjektModel
             {
                 Id = projectEntity.Id,
@@ -77,14 +77,6 @@ namespace Projekt.Web.Controllers
 
             };
         }
-
-        
-        public IActionResult MyProfile()
-        {
-            return RedirectToAction("MyProfile", "Cv");
-        }
-
-       
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

@@ -1,5 +1,6 @@
-﻿using CVSite.Data.Models;
+﻿using Projekt.Data.Models;
 using Microsoft.AspNetCore.Identity;
+using Projekt.Data.Models;
 
 namespace Projekt.Data.Identity
 {

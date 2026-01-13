@@ -32,7 +32,7 @@ namespace Projekt.Web.Controllers
 
             var isLoggedIn = User.Identity?.IsAuthenticated ?? false;
 
-            //  matcha på FullName (och fallback: Email om FullName saknas)
+            //  matcha på FullName och Email om FullName saknas
             var usersQuery = _db.Users.AsQueryable();
 
             // KRAV: anonym sökning får bara se offentliga profiler

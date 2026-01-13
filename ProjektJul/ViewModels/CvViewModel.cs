@@ -1,6 +1,4 @@
-﻿using CVSite.Data.Models;
-using Projekt.Data.Models;
-using System.Collections.Generic;
+﻿using Projekt.Data.Models;
 
 namespace Projekt.Web.ViewModels
 {

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Projekt.Data.Identity;
-namespace CVSite.Data.Models
+namespace Projekt.Data.Models
 {
     public class Projects
     {

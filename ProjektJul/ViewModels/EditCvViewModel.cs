@@ -1,9 +1,5 @@
-﻿using CVSite.Data.Models;
-using Microsoft.AspNetCore.Http;
-using Projekt.Data.Models;
-using System.Collections.Generic;
+﻿using Projekt.Data.Models;
 using System.ComponentModel.DataAnnotations;
-using static Projekt.Web.ViewModels.ProjectCheckBoxViewModel;
 
 namespace Projekt.Web.ViewModels
 {
