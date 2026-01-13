@@ -108,6 +108,15 @@ namespace Projekt.Web.Controllers
             if (user == null)
                 return RedirectToAction("Login");
 
+            // Kollar att det nya lösenordet inte är detsamma som nuvarande
+            var passwordCheck = await _userManager.CheckPasswordAsync(user, vm.NewPassword);
+            if (passwordCheck)
+            {
+                ModelState.AddModelError(nameof(vm.NewPassword), "Det nya lösenordet kan inte vara samma som det gamla");
+                return View(vm);
+            }
+
+
             var result = await _userManager.ChangePasswordAsync(
                 user,
                 vm.CurrentPassword,
@@ -123,7 +132,7 @@ namespace Projekt.Web.Controllers
                     {
                         ModelState.AddModelError(
                             nameof(vm.CurrentPassword),
-                            "Nuvarande lösenord var felaktigt."
+                            "Nuvarande lösenord var felaktigt"
                         );
                     }
                     else
@@ -134,15 +143,6 @@ namespace Projekt.Web.Controllers
 
                 return View(vm);
             }
-
-            //Gamla kooden bortkommenterad nuvarande lösen
-            //if (!result.Succeeded)
-            //{
-            //    foreach (var error in result.Errors)
-            //        ModelState.AddModelError(string.Empty, error.Description);
-
-            //    return View(vm);
-            //}
 
             // Viktigt: uppdatera login-session
             await _signInManager.RefreshSignInAsync(user);
