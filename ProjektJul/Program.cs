@@ -5,6 +5,10 @@ using Projekt.Data.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
+string path = Directory.GetCurrentDirectory();
+string dbPath = System.IO.Path.Combine(path, "App_Data");
+AppDomain.CurrentDomain.SetData("DataDirectory", dbPath);
+
 // MVC
 builder.Services.AddControllersWithViews();
 
