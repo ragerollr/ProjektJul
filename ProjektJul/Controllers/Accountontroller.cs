@@ -114,13 +114,35 @@ namespace Projekt.Web.Controllers
                 vm.NewPassword
             );
 
+            // Felmeddelande vid felaktigt nuvarande lösenord
             if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
-                    ModelState.AddModelError(string.Empty, error.Description);
+                {
+                    if (error.Code == "PasswordMismatch")
+                    {
+                        ModelState.AddModelError(
+                            nameof(vm.CurrentPassword),
+                            "Nuvarande lösenord var felaktigt."
+                        );
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
 
                 return View(vm);
             }
+
+            //Gamla kooden bortkommenterad nuvarande lösen
+            //if (!result.Succeeded)
+            //{
+            //    foreach (var error in result.Errors)
+            //        ModelState.AddModelError(string.Empty, error.Description);
+
+            //    return View(vm);
+            //}
 
             // Viktigt: uppdatera login-session
             await _signInManager.RefreshSignInAsync(user);
