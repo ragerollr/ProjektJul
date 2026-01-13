@@ -5,7 +5,7 @@
 }
 @model Projekt.Web.ViewModels.EditCvViewModel
 
-<h1>Redigera CV</h1>
+<h1>Edit CV</h1>
 
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
 
@@ -13,13 +13,13 @@
 
 
     <div>
-        <label>Förnamn</label>
+        <label>First name</label>
         <input asp-for="FirstName" />
         <span asp-validation-for="FirstName" class="text-danger"></span>
     </div>
 
     <div>
-        <label>Efternamn</label>
+        <label>Last name</label>
         <input asp-for="LastName" />
         <span asp-validation-for="LastName" class="text-danger"></span>
     </div>
@@ -40,7 +40,7 @@
     <div>
         <label>
             <input asp-for="IsPublic" />
-            Offentlig Profil
+            Public profile
         </label>
     </div>
 
@@ -139,7 +139,7 @@
 
     <hr />
 
-    <h3>Projekt</h3>
+    <h3>Projects</h3>
     <p>Kryssa i projekt du vill delta i</p>
 
     @for (int i = 0; i < Model.Projects.Count; i++)
@@ -156,7 +156,7 @@
     <hr />
 
     <div>
-        <label>Profilbild</label>
+        <label>Profile image</label>
         <input asp-for="ProfileImage" type="file" />
         
 
@@ -174,6 +174,6 @@
     <hr />
 
 
-    <button type="submit">Spara</button>
+    <button type="submit">Save</button>
 
 </form>

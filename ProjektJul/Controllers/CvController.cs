@@ -471,7 +471,6 @@ namespace Projekt.Web.Controllers
         public async Task<IActionResult> EditSkill(Skill form)
         {
             ModelState.Remove("User");
-            ModelState.Remove("UserId");
 
             var myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
